@@ -14,7 +14,7 @@ blue = (0, 0, 255)
 
 # init game and PyGame variables
 pygame.init()
-gameDisplay = pygame.display.set_mode((display_width, display_height))
+game_display = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('ScorchedEarth')
 clock = pygame.time.Clock()
 
@@ -58,7 +58,42 @@ def message_to_screen(text, color, y_displace=0, size=FontSize.SMALL):
     """
     text_surf, text_rect = text_object(text, color, size)
     text_rect.center = (int((display_width / 2)), int((display_height / 2) + y_displace))
-    gameDisplay.blit(text_surf, text_rect)
+    game_display.blit(text_surf, text_rect)
+
+
+def halt_whole_game():
+    """
+    Halt the whole program
+    :return: none
+    """
+    pygame.quit()
+    quit()
+
+
+def game_intro():
+    """
+    Some kind of menu
+    :return: none
+    """
+    intro = True
+
+    game_display.fill(white)
+    message_to_screen("Welcome to Tanks!", green, -100, FontSize.LARGE)
+    message_to_screen("Have fun", black, -30)
+    message_to_screen("Press S to play, P to pause or Q to quit", black, 180)
+    pygame.display.update()
+
+    clock.tick(15)
+
+    while intro:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                halt_whole_game()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    halt_whole_game()
+                elif event.key == pygame.K_s:
+                    intro = False
 
 
 def game_loop():
@@ -70,7 +105,7 @@ def game_loop():
 
         if game_over:
             message_to_screen("Game over", red, -50, FontSize.LARGE)
-            message_to_screen("S - play again, Q - quit", black, 50)
+            message_to_screen("S - play again, Q - quit", green, 50)
             pygame.display.update()
             while game_over:
                 for event in pygame.event.get():
@@ -101,14 +136,16 @@ def game_loop():
                     # move tank right
                     pass
 
-        gameDisplay.fill(white)
-        pygame.draw.rect(gameDisplay, black, [300, 400, 10, 100])
+        game_display.fill(black)
+        pygame.draw.rect(game_display, green, [300, 400, 10, 100])
         pygame.display.update()
         clock.tick(fps)
 
+
+game_intro()
 game_loop()
 
-message_to_screen("Bye", black, -50, FontSize.LARGE)
+message_to_screen("Bye", white, -50, FontSize.LARGE)
 pygame.display.update()
 time.sleep(2)
-pygame.quit()
+halt_whole_game()
