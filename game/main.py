@@ -6,11 +6,20 @@ from enum import Enum
 display_width = 800
 display_height = 600
 
+# color constants
 white = (255, 255, 255)
 black = (0, 0, 0)
 red = (255, 0, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
+
+# tank constants
+main_tank_x = display_width * 0.9
+main_tank_y = display_height * 0.9
+tank_width = 40
+tank_height = 12
+turret_width = 3
+wheel_width = 5
 
 # init game and PyGame variables
 pygame.init()
@@ -68,6 +77,23 @@ def halt_whole_game():
     """
     pygame.quit()
     quit()
+
+
+def draw_tank(coord_x, coord_y, color):
+    x = int(coord_x)
+    y = int(coord_y)
+    pygame.draw.circle(game_display, color,  (x, y), int(tank_height/4*3))
+    pygame.draw.rect(game_display, color, (x-int(tank_width/2), y, tank_width, tank_height))
+    pygame.draw.line(game_display, color, (x, y), (x-10, y-20), turret_width)
+
+    # draw wheels? is it needed??
+    pygame.draw.circle(game_display, color, (x - 15, y + tank_height), wheel_width)
+    pygame.draw.circle(game_display, color, (x - 10, y + tank_height), wheel_width)
+    pygame.draw.circle(game_display, color, (x - 5, y + tank_height), wheel_width)
+    pygame.draw.circle(game_display, color, (x, y + tank_height), wheel_width)
+    pygame.draw.circle(game_display, color, (x + 5, y + tank_height), wheel_width)
+    pygame.draw.circle(game_display, color, (x + 10, y + tank_height), wheel_width)
+    pygame.draw.circle(game_display, color, (x + 15, y + tank_height), wheel_width)
 
 
 def game_intro():
@@ -137,15 +163,15 @@ def game_loop():
                     pass
 
         game_display.fill(black)
-        pygame.draw.rect(game_display, green, [300, 400, 10, 100])
+        draw_tank(main_tank_x, main_tank_y, white)
         pygame.display.update()
         clock.tick(fps)
 
 
-game_intro()
+#game_intro()
 game_loop()
 
-message_to_screen("Bye", white, -50, FontSize.LARGE)
+#message_to_screen("Bye", white, -50, FontSize.LARGE)
 pygame.display.update()
-time.sleep(2)
+#time.sleep(2)
 halt_whole_game()
