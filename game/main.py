@@ -1,5 +1,6 @@
 import pygame
 import time
+from enum import Enum
 
 # set up global variables
 display_width = 800
@@ -17,13 +18,19 @@ gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('ScorchedEarth')
 clock = pygame.time.Clock()
 
+
 # PyGame fonts
+class FontSize(Enum):
+    SMALL = 1
+    MEDIUM = 2
+    LARGE = 3
+
 small_font = pygame.font.SysFont("comicsansms", 25)
 med_font = pygame.font.SysFont("comicsansms", 50)
 large_font = pygame.font.SysFont("comicsansms", 85)
 
 
-def text_object(text, color, size="small"):
+def text_object(text, color, size=FontSize.SMALL):
     """
     Returns text field as rectangle object
     :param text: text to be placed
@@ -31,16 +38,16 @@ def text_object(text, color, size="small"):
     :param size: size of the text (small, medium, large)
     :return: text object and borders of text as rectangle
     """
-    if size == "small":
+    if size == FontSize.SMALL:
         text_surface = small_font.render(text, True, color)
-    elif size == "medium":
+    elif size == FontSize.MEDIUM:
         text_surface = med_font.render(text, True, color)
-    elif size == "large":
+    elif size == FontSize.LARGE:
         text_surface = large_font.render(text, True, color)
     return text_surface, text_surface.get_rect()
 
 
-def message_to_screen(text, color, y_displace=0, size="small"):
+def message_to_screen(text, color, y_displace=0, size=FontSize.SMALL):
     """
     Places text to screen
     :param text: text to place
@@ -82,7 +89,7 @@ def game_loop():
 
 game_loop()
 
-message_to_screen("Bye", black, -50, "large")
+message_to_screen("Bye", black, -50, FontSize.LARGE)
 pygame.display.update()
 time.sleep(2)
 pygame.quit()
