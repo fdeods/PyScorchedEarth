@@ -14,8 +14,6 @@ green = (0, 255, 0)
 blue = (0, 0, 255)
 
 # tank constants
-main_tank_x = display_width * 0.9
-main_tank_y = display_height * 0.9
 tank_width = 40
 tank_height = 12
 turret_width = 3
@@ -80,6 +78,13 @@ def halt_whole_game():
 
 
 def draw_tank(coord_x, coord_y, color):
+    """
+    Draws a tank on specified coordinates
+    :param coord_x: X coordinate of tank center
+    :param coord_y: Y coordinate of tank center
+    :param color: color of the tank
+    :return: none
+    """
     x = int(coord_x)
     y = int(coord_y)
     pygame.draw.circle(game_display, color,  (x, y), int(tank_height/4*3))
@@ -94,6 +99,21 @@ def draw_tank(coord_x, coord_y, color):
     pygame.draw.circle(game_display, color, (x + 5, y + tank_height), wheel_width)
     pygame.draw.circle(game_display, color, (x + 10, y + tank_height), wheel_width)
     pygame.draw.circle(game_display, color, (x + 15, y + tank_height), wheel_width)
+
+
+def update_tank_coordinates(coord_x, move_tank):
+    """
+    Update coordinates of the tank
+    :param coord_x: current X coordinate
+    :param move_tank: change of X coordinate
+    :return: updated coordinate
+    """
+    if move_tank > 0:
+        return min(coord_x+move_tank, display_width-int(tank_width/2))
+    elif move_tank < 0:
+        return max(coord_x+move_tank, int(tank_width/2))
+    else:
+        return coord_x
 
 
 def game_intro():
@@ -127,6 +147,10 @@ def game_loop():
     game_over = False
     fps = 15
 
+    main_tank_x = display_width * 0.9
+    main_tank_y = display_height * 0.9
+    move_tank = 0
+
     while not game_exit:
 
         if game_over:
@@ -157,12 +181,18 @@ def game_loop():
                     pass
                 elif event.key == pygame.K_LEFT:
                     # move tank left
-                    pass
+                    move_tank = -3
                 elif event.key == pygame.K_RIGHT:
                     # move tank right
+                    move_tank = 3
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
+                    move_tank = 0
+                elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     pass
 
         game_display.fill(black)
+        main_tank_x = update_tank_coordinates(main_tank_x, move_tank)
         draw_tank(main_tank_x, main_tank_y, white)
         pygame.display.update()
         clock.tick(fps)
