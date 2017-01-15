@@ -21,7 +21,7 @@ turret_width = 3
 turret_length = int(tank_width/2) + 5
 wheel_width = 5
 move_step = 3
-angle_step = pi/16
+angle_step = pi/32
 
 # init game and PyGame variables
 pygame.init()
@@ -72,6 +72,44 @@ def message_to_screen(text, color, y_displace=0, size=FontSize.SMALL):
     game_display.blit(text_surf, text_rect)
 
 
+def fire_simple_shell(gun_end_coord, gun_angle, speed=100):
+    """
+    Show animation of shooting simple shell
+    :param gun_end_coord: initial point of shell
+    :param gun_angle: initial angle
+    :param speed: initial speed
+    :return: none
+    """
+    fire = True
+
+    print(gun_angle)
+
+    shell_position = list(gun_end_coord)
+    horizontal_speed = int(speed * sin(gun_angle))
+    elapsed_time = 1
+
+    while fire:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                halt_whole_game()
+
+        pygame.draw.circle(game_display, green, (shell_position[0], shell_position[1]), 5)
+
+        vertical_speed = -(int(speed * cos(gun_angle)) - 10*elapsed_time)
+        print(vertical_speed)
+        shell_position[0] += horizontal_speed
+        shell_position[1] += vertical_speed
+        elapsed_time += 1
+
+        if shell_position[1] > display_height:
+            fire = False
+        if shell_position[0] > display_width or shell_position[0] < 0:
+            fire = False
+
+        pygame.display.update()
+        clock.tick(15)
+
+
 def halt_whole_game():
     """
     Halt the whole program
@@ -88,7 +126,7 @@ def draw_tank(coord_x, coord_y, turret_angle, color):
     :param coord_y: Y coordinate of tank center
     :param turret_angle: angle of tank's turret
     :param color: color of the tank
-    :return: none
+    :return: current position of turret end as tuple (x,y)
     """
     x = int(coord_x)
     y = int(coord_y)
@@ -107,6 +145,8 @@ def draw_tank(coord_x, coord_y, turret_angle, color):
     pygame.draw.circle(game_display, color, (x + 5, y + tank_height), wheel_width)
     pygame.draw.circle(game_display, color, (x + 10, y + tank_height), wheel_width)
     pygame.draw.circle(game_display, color, (x + 15, y + tank_height), wheel_width)
+
+    return new_x, new_y
 
 
 def update_tank_coordinates(coord_x, move_tank):
@@ -172,11 +212,14 @@ def game_loop():
 
     main_tank_x = display_width * 0.9
     main_tank_y = display_height * 0.9
-    main_tank_turret_angle = -pi / 4
+    main_tank_turret_angle = -pi / 2
     move_tank = 0
     angle_change = 0
 
     while not game_exit:
+
+        game_display.fill(black)
+        gun = draw_tank(main_tank_x, main_tank_y, main_tank_turret_angle, white)
 
         if game_over:
             message_to_screen("Game over", red, -50, FontSize.LARGE)
@@ -210,16 +253,16 @@ def game_loop():
                 elif event.key == pygame.K_RIGHT:
                     # move tank right
                     move_tank = move_step
+                elif event.key == pygame.K_SPACE:
+                    fire_simple_shell(gun, main_tank_turret_angle)
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
                     move_tank = 0
                 elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     angle_change = 0
 
-        game_display.fill(black)
         main_tank_x = update_tank_coordinates(main_tank_x, move_tank)
         main_tank_turret_angle = update_turret_angle(main_tank_turret_angle, angle_change)
-        draw_tank(main_tank_x, main_tank_y, main_tank_turret_angle, white)
         pygame.display.update()
         clock.tick(fps)
 
