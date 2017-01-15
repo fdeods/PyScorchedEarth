@@ -65,25 +65,44 @@ def game_loop():
     game_exit = False
     game_over = False
     fps = 15
+
     while not game_exit:
-        while game_over:
-            gameDisplay.fill(white)
-            message_to_screen("R - retry, Q-quit", black)
+
+        if game_over:
+            message_to_screen("Game over", red, -50, FontSize.LARGE)
+            message_to_screen("S - play again, Q - quit", black, 50)
             pygame.display.update()
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_q:
+            while game_over:
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_q:
+                            game_exit = True
+                            game_over = False
+                        if event.key == pygame.K_s:
+                            game_loop()
+                    elif event.type == pygame.QUIT:
                         game_exit = True
                         game_over = False
-                    if event.key == pygame.K_c:
-                        game_loop()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_exit = True
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    # change angle
+                    pass
+                elif event.key == pygame.K_DOWN:
+                    # change angle
+                    pass
+                elif event.key == pygame.K_LEFT:
+                    # move tank left
+                    pass
+                elif event.key == pygame.K_RIGHT:
+                    # move tank right
+                    pass
 
         gameDisplay.fill(white)
-        pygame.draw.rect(gameDisplay, black, [300,400,10,100])
+        pygame.draw.rect(gameDisplay, black, [300, 400, 10, 100])
         pygame.display.update()
         clock.tick(fps)
 
