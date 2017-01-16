@@ -4,8 +4,8 @@ from enum import Enum
 from math import pi, cos, sin
 
 # set up global variables
-display_width = 800
-display_height = 600
+display_width = 1600
+display_height = 900
 
 # color constants
 white = (255, 255, 255)
@@ -21,7 +21,12 @@ turret_width = 3
 turret_length = int(tank_width/2) + 5
 wheel_width = 5
 move_step = 3
-angle_step = pi/32
+angle_step = pi/64
+
+# shell constants
+min_shell_speed = 10
+max_shell_speed = 30
+shell_speed_step = (max_shell_speed-min_shell_speed)/100
 
 # init game and PyGame variables
 pygame.init()
@@ -72,34 +77,32 @@ def message_to_screen(text, color, y_displace=0, size=FontSize.SMALL):
     game_display.blit(text_surf, text_rect)
 
 
-def fire_simple_shell(gun_end_coord, gun_angle, speed=100):
+def fire_simple_shell(gun_end_coord, gun_angle, power=50):
     """
     Show animation of shooting simple shell
     :param gun_end_coord: initial point of shell
     :param gun_angle: initial angle
-    :param speed: initial speed
+    :param power: initial power of shot
     :return: none
     """
-    fire = True
-
-    print(gun_angle)
-
+    speed = min_shell_speed+shell_speed_step*power
     shell_position = list(gun_end_coord)
-    horizontal_speed = int(speed * sin(gun_angle))
-    elapsed_time = 1
+    elapsed_time = 0
+
+    fire = True
 
     while fire:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 halt_whole_game()
 
-        pygame.draw.circle(game_display, green, (shell_position[0], shell_position[1]), 5)
+        vertical_speed = -(int(speed * cos(gun_angle)) - 10 * elapsed_time/2)
+        horizontal_speed = int(speed * sin(gun_angle))
+        shell_position[0] += int(horizontal_speed*elapsed_time)
+        shell_position[1] += int(vertical_speed*elapsed_time)
+        elapsed_time += 0.2
 
-        vertical_speed = -(int(speed * cos(gun_angle)) - 10*elapsed_time)
-        print(vertical_speed)
-        shell_position[0] += horizontal_speed
-        shell_position[1] += vertical_speed
-        elapsed_time += 1
+        pygame.draw.circle(game_display, green, (shell_position[0], shell_position[1]), 5)
 
         if shell_position[1] > display_height:
             fire = False
@@ -107,7 +110,7 @@ def fire_simple_shell(gun_end_coord, gun_angle, speed=100):
             fire = False
 
         pygame.display.update()
-        clock.tick(15)
+        clock.tick(30)
 
 
 def halt_whole_game():
@@ -166,7 +169,7 @@ def update_tank_coordinates(coord_x, move_tank):
 
 def update_turret_angle(current_angle, angle_change):
     """
-    Update turrent angle
+    Update turret angle
     :param current_angle: current angle of the turret
     :param angle_change: angle change
     :return: updated angle
@@ -177,6 +180,31 @@ def update_turret_angle(current_angle, angle_change):
         return max(current_angle+angle_change, -pi/2)
     else:
         return current_angle
+
+
+def update_tank_power(current_power, power_change):
+    """
+    Update tank's power
+    :param current_power: current tank's power
+    :param power_change: change of power
+    :return: updated power
+    """
+    if power_change > 0:
+        return min(current_power+power_change, 100)
+    elif power_change < 0:
+        return max(current_power+power_change, 0)
+    else:
+        return current_power
+
+
+def show_tanks_power(current_power):
+    """
+    Displays tank's power to screen
+    :param current_power: power to display
+    :return: none
+    """
+    (text_surface, _) = text_object("Power: "+str(current_power)+"%", white, FontSize.SMALL)
+    game_display.blit(text_surface, [10, 10])
 
 
 def game_intro():
@@ -213,8 +241,10 @@ def game_loop():
     main_tank_x = display_width * 0.9
     main_tank_y = display_height * 0.9
     main_tank_turret_angle = -pi / 2
+    main_tank_power = 50
     move_tank = 0
     angle_change = 0
+    power_change = 0
 
     while not game_exit:
 
@@ -254,15 +284,23 @@ def game_loop():
                     # move tank right
                     move_tank = move_step
                 elif event.key == pygame.K_SPACE:
-                    fire_simple_shell(gun, main_tank_turret_angle)
+                    fire_simple_shell(gun, main_tank_turret_angle, main_tank_power)
+                elif event.key == pygame.K_z:
+                    power_change = 1
+                elif event.key == pygame.K_x:
+                    power_change = -1
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
                     move_tank = 0
                 elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     angle_change = 0
+                elif event.key == pygame.K_z or event.key == pygame.K_x:
+                    power_change = 0
 
         main_tank_x = update_tank_coordinates(main_tank_x, move_tank)
         main_tank_turret_angle = update_turret_angle(main_tank_turret_angle, angle_change)
+        main_tank_power = update_tank_power(main_tank_power, power_change)
+        show_tanks_power(main_tank_power)
         pygame.display.update()
         clock.tick(fps)
 
