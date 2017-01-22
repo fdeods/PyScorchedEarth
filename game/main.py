@@ -1,7 +1,8 @@
 import pygame
-import time
+import random
 from enum import Enum
 from math import pi, cos, sin
+from shapely.geometry import LineString
 
 # set up global variables
 display_width = 1600
@@ -13,6 +14,7 @@ black = (0, 0, 0)
 red = (255, 0, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
+nice_color = (0xfd, 0x30, 0xd5)
 
 # tank constants
 tank_width = 40
@@ -25,7 +27,7 @@ angle_step = pi/64
 
 # shell constants
 min_shell_speed = 10
-max_shell_speed = 30
+max_shell_speed = 20
 shell_speed_step = (max_shell_speed-min_shell_speed)/100
 
 # init game and PyGame variables
@@ -77,6 +79,53 @@ def message_to_screen(text, color, y_displace=0, size=FontSize.SMALL):
     game_display.blit(text_surf, text_rect)
 
 
+def animate_explosion(start_point):
+    """
+    Animates custom explosion on screen on specified coordinates
+    :param start_point: (x,y) coordinates of explosion
+    :return: none
+    """
+    explode = True
+    color_choices = [white, black, red, green, blue, nice_color]
+    while explode:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                halt_whole_game()
+
+        magnitude = 1
+        while magnitude < 50:
+            exploding_bit_x = start_point[0] + random.randrange(-1*magnitude, magnitude)
+            exploding_bit_y = start_point[1] + random.randrange(-1*magnitude, magnitude)
+
+            pygame.draw.circle(game_display,
+                               random.choice(color_choices),
+                               (exploding_bit_x, exploding_bit_y),
+                               random.randrange(1, 5))
+            magnitude += 1
+            pygame.display.update()
+            clock.tick(100)
+
+        explode = False
+
+
+def check_collision(prev_shell_position, current_shell_position):
+    """
+    Checks collision of shell with other objects and return coordinates of shell collision
+    :param prev_shell_position: Coordinates of previous shell position
+    :param current_shell_position: Coordinates of updated shell position
+    :return: Coordinates of collision or None if no collision detected
+    """
+    line1 = LineString([prev_shell_position, current_shell_position])
+    line2 = LineString([[0, display_height], [display_width, display_height]])
+    intersection = line1.intersection(line2)
+
+    if intersection:
+        return int(intersection.x), int(intersection.y)
+    # if current_shell_position[0] > display_width or current_shell_position[0] < 0:
+    #    return True
+    return None
+
+
 def fire_simple_shell(gun_end_coord, gun_angle, power=50):
     """
     Show animation of shooting simple shell
@@ -87,7 +136,7 @@ def fire_simple_shell(gun_end_coord, gun_angle, power=50):
     """
     speed = min_shell_speed+shell_speed_step*power
     shell_position = list(gun_end_coord)
-    elapsed_time = 0
+    elapsed_time = 0.1
 
     fire = True
 
@@ -96,21 +145,23 @@ def fire_simple_shell(gun_end_coord, gun_angle, power=50):
             if event.type == pygame.QUIT:
                 halt_whole_game()
 
+        prev_shell_position = list(shell_position)
         vertical_speed = -(int(speed * cos(gun_angle)) - 10 * elapsed_time/2)
         horizontal_speed = int(speed * sin(gun_angle))
         shell_position[0] += int(horizontal_speed*elapsed_time)
         shell_position[1] += int(vertical_speed*elapsed_time)
-        elapsed_time += 0.2
+        elapsed_time += 0.1
 
         pygame.draw.circle(game_display, green, (shell_position[0], shell_position[1]), 5)
 
-        if shell_position[1] > display_height:
-            fire = False
-        if shell_position[0] > display_width or shell_position[0] < 0:
+        # TODO check collision with ground and other tanks
+        collision_point = check_collision(prev_shell_position, shell_position)
+        if collision_point:
+            animate_explosion(collision_point)
             fire = False
 
         pygame.display.update()
-        clock.tick(30)
+        clock.tick(60)
 
 
 def halt_whole_game():
@@ -308,7 +359,5 @@ def game_loop():
 # game_intro()
 game_loop()
 
-# message_to_screen("Bye", white, -50, FontSize.LARGE)
 pygame.display.update()
-# time.sleep(2)
 halt_whole_game()
