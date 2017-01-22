@@ -124,8 +124,8 @@ class Option:
 		self.rect.center = (int((width / 2)), int(height / 2))
 		self.rect.top = self.pos
 
-
-effectTimeTable = ((3300, 4350), (7500, 8500), (11580, 12580), (15500, 16500), (19500, 20500))
+effectLength = 1200
+effectTimeTable = ((3030, 3030+effectLength), (7230, 7230+effectLength), (11150, 11150+effectLength), (15250, 15250+effectLength), (19250, 19250+effectLength))
 effectTimeMin = effectTimeTable[0][0]
 effectTimeMax = effectTimeTable[len(effectTimeTable)-1][1]
 def isEffect (musicPos):
