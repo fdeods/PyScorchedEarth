@@ -1,60 +1,20 @@
 import pygame
-import random
-from enum import Enum
-from math import pi, cos, sin, sqrt
+from math import cos, sin, sqrt
 from shapely.geometry import LineString
+from game_core.constants import *
+from game_core.utils import animate_explosion, halt_whole_game
+from game_core.tank import Tank
 
-# set up global variables
-display_width = 1600
-display_height = 900
-
-# color constants
-white = (255, 255, 255)
-black = (0, 0, 0)
-red = (255, 0, 0)
-green = (0, 255, 0)
-good_health_color = green
-normal_health_color = (0xff, 0x91, 0x00)
-low_health_color = red
-blue = (0, 0, 255)
-nice_color = (0xfd, 0x30, 0xd5)
-dark_green = (0x13, 0x70, 0x2c)
-
-# tank constants
-tank_width = 40
-tank_height = 12
-turret_width = 3
-turret_length = int(tank_width/2) + 5
-wheel_width = 5
-move_step = 3
-angle_step = pi/64
-
-# shell constants
-min_shell_speed = 10
-max_shell_speed = 20
-shell_speed_step = (max_shell_speed-min_shell_speed)/100
-
-# init game and PyGame variables
+# init game_core and PyGame variables
 pygame.init()
 game_display = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('ScorchedEarth')
 clock = pygame.time.Clock()
 
-# temporary simple ground
-ground_height = 73
 
-# temporary enemy tank coordinates
-e_tank_x = int(display_height * 0.1)
-e_tank_y = int(display_height * 0.9)
-e_turret_angle = pi/4
-e_tank_health = 100
+# temporary enemy tank
+enemy_tank = Tank(game_display, (e_tank_x, e_tank_y), (10, 10), white)
 
-
-# PyGame fonts
-class FontSize(Enum):
-    SMALL = 1
-    MEDIUM = 2
-    LARGE = 3
 
 small_font = pygame.font.SysFont("comicsansms", 25)
 med_font = pygame.font.SysFont("comicsansms", 50)
@@ -92,45 +52,6 @@ def message_to_screen(text, color, y_displace=0, size=FontSize.SMALL):
     game_display.blit(text_surf, text_rect)
 
 
-def animate_explosion(start_point, size=50):
-    """
-    Animates custom explosion on screen on specified coordinates
-    :param size: power (radius) of explosion
-    :param start_point: (x,y) coordinates of explosion
-    :return: none
-    """
-    explode = True
-    color_choices = [white, red, green, blue, nice_color]
-    while explode:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                halt_whole_game()
-
-        magnitude = 1
-        while magnitude < size:
-            exploding_bit_x = start_point[0] + random.randrange(-1*magnitude, magnitude)
-            exploding_bit_y = start_point[1] + random.randrange(-1*magnitude, magnitude)
-
-            pygame.draw.circle(game_display,
-                               random.choice(color_choices),
-                               (exploding_bit_x, exploding_bit_y),
-                               random.randrange(1, 5))
-            magnitude += 1
-            pygame.display.update()
-            clock.tick(100)
-
-        explode = False
-
-
-def check_collision_with_tank(shell_line):
-    """
-    Checks whether there was a collision with tank and returns collision coordinates
-    :param shell_line: trajectory line of the shell
-    :return: intersection point coordinates or None
-    """
-    return None
-
-
 def check_collision(prev_shell_position, current_shell_position):
     """
     Checks collision of shell with other objects and return coordinates of shell collision
@@ -142,43 +63,15 @@ def check_collision(prev_shell_position, current_shell_position):
     line2 = LineString([[0, display_height-ground_height], [display_width, display_height-ground_height]])
 
     # temporary check if we hit enemy tank
-    # intersection = check_collision_with_tank(line1)
-    # if intersection:
-    #    return int(intersection.x), int(intersection.y)
+    intersection = enemy_tank.check_collision_with_tank(line1)
+    if intersection:
+        return intersection
 
     intersection = line1.intersection(line2)
 
     if intersection:
         return int(intersection.x), int(intersection.y)
     return None
-
-
-def calculate_distance_from_tank_center(explosion_point):
-    """
-    Calculates distance from explosion_point to tank center
-    :param explosion_point: coordinates of explosion point as tuple
-    :return: distance to tank center
-    """
-    return int(sqrt((explosion_point[0]-e_tank_x)**2+(explosion_point[1]-e_tank_y)**2))
-
-
-def apply_damage(explosion_point, explosion_power):
-    """
-    Applies damage taken by tank regarding to position of explosion point and its power
-    :param explosion_point: coordinates of explosion point
-    :param explosion_power: power of explosion
-    :return: none
-    """
-    global e_tank_health
-    distance_from_tank = calculate_distance_from_tank_center(explosion_point)
-    print(distance_from_tank)
-    damage = 0
-    if distance_from_tank < explosion_power:
-        damage = int(((explosion_power-distance_from_tank) / explosion_power) * 50)
-
-    print(damage)
-
-    e_tank_health = max(e_tank_health-damage, 0)
 
 
 def fire_simple_shell(gun_end_coord, gun_angle, power=50):
@@ -213,23 +106,15 @@ def fire_simple_shell(gun_end_coord, gun_angle, power=50):
         collision_point = check_collision(prev_shell_position, shell_position)
 
         if collision_point:
-            animate_explosion(collision_point)
-            apply_damage(collision_point, power)
+            animate_explosion(game_display, collision_point, simple_shell_radius)
+            if enemy_tank.apply_damage(collision_point, simple_shell_power, simple_shell_radius):
+                print("YOU WON")
             fire = False
         else:
             pygame.draw.circle(game_display, red, (shell_position[0], shell_position[1]), 5)
 
         pygame.display.update()
         clock.tick(60)
-
-
-def halt_whole_game():
-    """
-    Halt the whole program
-    :return: none
-    """
-    pygame.quit()
-    quit()
 
 
 def draw_tank(coord_x, coord_y, turret_angle, color):
@@ -424,9 +309,9 @@ def game_loop():
 
         game_display.fill(black)
         gun = draw_tank(main_tank_x, main_tank_y, main_tank_turret_angle, white)
-        draw_tank(e_tank_x, e_tank_y, e_turret_angle, white)
+        enemy_tank.draw_tank()
         draw_health_bar(my_health_bar, [1490, 10])
-        draw_health_bar(e_tank_health)
+        enemy_tank.draw_health_bar()
         show_tanks_power(main_tank_power)
 
         main_tank_x = update_tank_coordinates(main_tank_x, move_tank)
