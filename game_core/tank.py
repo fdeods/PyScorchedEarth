@@ -2,11 +2,19 @@ import pygame
 from math import sqrt, sin, cos
 from shapely.geometry import LineString
 from game_core.constants import *
+from game_core.utils import text_object
 
 
 class Tank:
 
     def __init__(self, game_display, pos, health_bar_pos, color):
+        """
+        Initialize tank
+        :param game_display: handle to display
+        :param pos: initial position of the tank as list
+        :param health_bar_pos: position of health bar os tuple
+        :param color: color of this player tanks
+        """
         self.position = pos
         self.health_bar_position = health_bar_pos
         self.tank_health = initial_tank_health
