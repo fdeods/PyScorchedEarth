@@ -95,9 +95,13 @@ class Option:
 
 	hovered = False
 
-	def __init__(self, text, pos):
+	def __init__(self, text, pos, font=0):
 		self.text = text
 		self.pos = pos
+		if (font != 0):
+			self.font = font
+		else:
+			self.font = menu_font
 		self.set_rect()
 		self.draw()
 
@@ -106,7 +110,7 @@ class Option:
 		screen.blit(self.rend, self.rect)
 
 	def set_rend(self):
-		self.rend = menu_font.render(self.text, True, self.get_color())
+		self.rend = self.font.render(self.text, True, self.get_color())
 
 	def get_color(self):
 		if self.hovered:
@@ -120,28 +124,41 @@ class Option:
 		self.rect.center = (int((width / 2)), int(height / 2))
 		self.rect.top = self.pos
 
+
+effectTimeTable = ((3300, 4350), (7500, 8500), (11580, 12580), (15500, 16500), (19500, 20500))
+effectTimeMin = effectTimeTable[0][0]
+effectTimeMax = effectTimeTable[len(effectTimeTable)-1][1]
+def isEffect (musicPos):
+	if (musicPos < effectTimeMin):
+		return False
+	if (musicPos > effectTimeMax):
+		return True
+	for effect in effectTimeTable:
+		if (effect[0] <= musicPos <= effect[1]):
+			return True
+	return False
+
 if __name__ == '__main__':
 	size = width, height = 800 , 600
 	screen = pygame.display.set_mode(size)
 	bg = pygame.image.load("background.jpg")
 	bg = pygame.transform.scale(bg, size)
+	light = pygame.image.load('circle.png')
 
 	pygame.init()
-	menu_font = pygame.font.Font(None, 40)
-	x, y = int((width / 2)), int((height/ 2))
-	first, space = 255, 60
+	menu_font = pygame.font.Font('font.ttf', 30)
+	title_font = pygame.font.Font('font.ttf', 80)
+	first, space = 250, 50
 	options = [
+		Option("SCORCHED EARTCH", 20, title_font),
 		Option("NEW GAME", (first)),
-		Option("LOAD GAME", (first + space)),
-		Option("OPTIONS", (first + (space * 2)))
+		Option("OPTIONS", (first + space)),
+		Option("EXIT", (first + (space * 2)))
 	]
-
-	pygame.mixer.music.load('backgroundMenuMusic.mp3')
-	pygame.mixer.music.play(-1)
 
 	clock = pygame.time.Clock()
 	test = ParticleEffect(screen, (0, 0), (800, 600))
-	testgrav = test.CreatePointGravity(strength = -5, pos = (width/2, height/2 + 80))
+	testgrav = test.CreatePointGravity(strength = -5, pos = (width/2, height/2 + 100))
 
 	testsource = test.CreateSource((-10, -10), initspeed = 5.0, initdirection = 2.35619449, initspeedrandrange = 2.0, initdirectionrandrange = 1.5, particlesperframe = 5, particlelife = 75, drawtype = particles.DRAWTYPE_SCALELINE, colour = (255, 255, 255), length = 10.0)
 	testsource.CreateParticleKeyframe(50, colour = (3, 74, 236), length = 10.0)
@@ -155,14 +172,9 @@ if __name__ == '__main__':
 	testsource.CreateParticleKeyframe(100, colour = (0, 255, 255), length = 10.0)
 	testsource.CreateParticleKeyframe(125, colour = (0, 0, 0), length = 10.0)
 
-	light = pygame.image.load('circle.png')
-	i = 0
-	numberOfEffect = 0
-	effect = [[58, 20], [138, 20], [215,20], [295,19], [380,18]] #[time, length]
-	effectTime = 0
-	isEffect = False
+	pygame.mixer.music.load('backgroundMenuMusic.mp3')
+	pygame.mixer.music.play(-1)
 	while True:
-		i += 1
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				sys.exit()
@@ -177,26 +189,11 @@ if __name__ == '__main__':
 				option.hovered = False
 			option.draw()
 
-		filter = pygame.surface.Surface((width, height))
-
-		if (numberOfEffect < len(effect) and i == effect[numberOfEffect][0] and isEffect == False):
-			isEffect = True
-
-		if (isEffect):
-			effectTime+=1
-		else:
+		if (not isEffect(pygame.mixer.music.get_pos())):
+			filter = pygame.surface.Surface((width, height))
 			filter.fill(pygame.color.Color('White'))
-
-		if (isEffect and effectTime > effect[numberOfEffect][1]):
-			numberOfEffect += 1
-			effectTime = 0
-			isEffect = False
-
-		# print(pygame.mixer.music.get_pos())
-
-		filter.blit(light, tuple(map(lambda x: x - 50, pygame.mouse.get_pos())))
-		screen.blit(filter, (0, 0), special_flags=pygame.BLEND_RGBA_SUB)
-		pygame.display.flip()
+			filter.blit(light, tuple(map(lambda x: x - 50, pygame.mouse.get_pos())))
+			screen.blit(filter, (0, 0), special_flags=pygame.BLEND_RGBA_SUB)
+			pygame.display.flip()
 
 		pygame.display.update()
-		clock.tick(20)
