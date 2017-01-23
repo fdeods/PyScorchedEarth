@@ -1,4 +1,4 @@
-import particles, gravity, obstacles
+from libs.pyIgnition import particles, gravity, obstacles
 
 class ParticleEffect:
     def __init__(self, display, pos, size):

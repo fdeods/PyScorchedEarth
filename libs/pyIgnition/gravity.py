@@ -4,7 +4,8 @@
 # Gravity objects
 
 from math import sqrt
-import keyframes, interpolate, random
+from libs.pyIgnition import keyframes, interpolate
+import random
 
 UNIVERSAL_CONSTANT_OF_MAKE_GRAVITY_LESS_STUPIDLY_SMALL = 1000.0  # Well, Newton got one to make it less stupidly large.
 

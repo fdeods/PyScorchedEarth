@@ -5,8 +5,7 @@
 
 import pygame
 from math import sqrt, pow
-from gravity import UNIVERSAL_CONSTANT_OF_MAKE_GRAVITY_LESS_STUPIDLY_SMALL
-import keyframes, interpolate
+from libs.pyIgnition.gravity import UNIVERSAL_CONSTANT_OF_MAKE_GRAVITY_LESS_STUPIDLY_SMALL, keyframes, interpolate
 
 
 MAXDIST = 20.0

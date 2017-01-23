@@ -4,7 +4,8 @@
 # Particle and ParticleSource objects
 
 
-import keyframes, interpolate, random, math, pygame
+from libs.pyIgnition import keyframes, interpolate
+import random, math, pygame
 
 
 DRAWTYPE_POINT = 0
