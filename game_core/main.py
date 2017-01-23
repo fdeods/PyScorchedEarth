@@ -1,6 +1,7 @@
 import pygame
 from math import cos, sin
 from shapely.geometry import LineString
+from random import randrange
 from game_core.constants import *
 from game_core.tank import Tank
 from game_core.utils import animate_explosion, halt_whole_game, message_to_screen
@@ -26,8 +27,23 @@ def reinitialize_tanks():
     :return: none
     """
     global tanks
-    tanks = [Tank(game_display, [e_tank_x, e_tank_y], (10, 10), white),
-             Tank(game_display, [int(display_width * 0.9), int(display_height * 0.9)], (1490, 10), white)]
+    tanks = []
+    initial_y_coord = int(display_height*0.9)
+    tab = 5+int(tank_width/2)
+    health_bar_positions = [(10, 10), (1490, 10), (10, 45), (1490, 45)]
+    for i in range(tanks_number):
+        generate = True
+        while generate:
+            tank_pos_x = randrange(tab, display_width-tab)
+            # print(tank_pos_x)
+            good_choice = True
+            for tank in tanks:
+                if abs(tank_pos_x - tank.get_tank_position()[0]) < tank_width+10:
+                    good_choice = False
+                    break
+            if good_choice:
+                tanks.append(Tank(game_display, (tank_pos_x, initial_y_coord), health_bar_positions[i], white))
+                generate = False
 
 
 def check_collision(prev_shell_position, current_shell_position):
@@ -151,9 +167,9 @@ def game_loop():
 
     while not game_exit:
         if game_over:
-            message_to_screen(game_display, "Game over", red, -50, FontSize.LARGE)
-            message_to_screen(game_display, "S - play again", green, 50)
-            message_to_screen(game_display, "Q - quit", green, 80)
+            message_to_screen(game_display, "Game over", red, -50, FontSize.LARGE, sys_font=False)
+            message_to_screen(game_display, "S - play again", green, 50, sys_font=False)
+            message_to_screen(game_display, "Q - quit", green, 80, sys_font=False)
             pygame.display.update()
             while game_over:
                 for event in pygame.event.get():
@@ -210,4 +226,4 @@ def game_loop():
         pygame.display.update()
         clock.tick(fps)
 
-#game_loop()
+game_loop()

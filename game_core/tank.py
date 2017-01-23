@@ -2,7 +2,7 @@ import pygame
 from math import sqrt, sin, cos
 from shapely.geometry import LineString
 from game_core.constants import *
-from game_core.utils import text_object, animate_explosion
+from game_core.utils import sys_text_object, animate_explosion
 
 
 class Tank:
@@ -18,9 +18,9 @@ class Tank:
         :param health_bar_pos: position of health bar os tuple
         :param color: color of this player tanks
         """
-        self.position = pos
+        self.position = list(pos)
         self.health_bar_position = health_bar_pos
-        self.tank_health = 1 # initial_tank_health
+        self.tank_health = initial_tank_health
         self.turret_angle = initial_turret_angle
         self.player_color = color
         self.turret_end_x = 0
@@ -171,7 +171,7 @@ class Tank:
         Displays tank's power to screen
         :return: none
         """
-        (text_surface, rect_size) = text_object("Power: " + str(self.tank_power) + "%", white, FontSize.SMALL)
+        (text_surface, rect_size) = sys_text_object("Power: " + str(self.tank_power) + "%", white, FontSize.SMALL)
         self.game_display.blit(text_surface, [int(display_width / 2) - int(rect_size.width / 2), 10])
 
     def draw_health_bar(self):
@@ -206,3 +206,10 @@ class Tank:
         :return: tank's health
         """
         return self.tank_health
+
+    def get_tank_position(self):
+        """
+        Return tanks center position
+        :return: tank_position as tuple (x, y)
+        """
+        return self.position[0], self.position[1]
