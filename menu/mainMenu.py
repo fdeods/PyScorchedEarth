@@ -1,7 +1,8 @@
-import sys, pygame
+import sys
+import pygame
 from game_core import constants
 from libs.pyIgnition import particleEffect, particles
-# from game_core import main
+#  from game_core import main
 
 
 class Option:
@@ -19,7 +20,7 @@ class Option:
         self.text = text
         self.pos = pos
         self.func = func
-        if (font != 0):
+        if font != 0:
             self.font = font
         else:
             self.font = menu_font
@@ -71,25 +72,25 @@ effectTimeMin = effectTimeTable[0][0]
 effectTimeMax = effectTimeTable[len(effectTimeTable)-1][1]
 
 
-def isEffect (musicPos):
-    if (musicPos < effectTimeMin):
+def is_effect(music_pos):
+    if music_pos < effectTimeMin:
         return False
-    if (musicPos > effectTimeMax):
+    if music_pos > effectTimeMax:
         return True
-    for effect in effectTimeTable:
-        if (effect[0] <= musicPos <= effect[1]):
+    for effect_value in effectTimeTable:
+        if effect_value[0] <= music_pos <= effect_value[1]:
             return True
     return False
 
 
-def emptyFunc ():
+def empty_func():
     """
     empty function for Option objects
     """
     pass
 
 
-def drawBlackScreenEffect ():
+def draw_black_screen_effect():
     filter = pygame.surface.Surface((constants.display_width, constants.display_height))
     filter.fill(pygame.color.Color('White'))
     filter.blit(light, tuple(map(lambda x: x - 50, pygame.mouse.get_pos())))
@@ -100,26 +101,26 @@ if __name__ == '__main__':
     size = constants.display_width, constants.display_height
     screen = pygame.display.set_mode(size)
 
-    #initialize pictures
+    # initialize pictures
     light = pygame.image.load('../assets/images/circle.png')
     bg = pygame.image.load("../assets/images/background.jpg")
     bg = pygame.transform.scale(bg, size)
 
-    #initialize fonts
+    # initialize fonts
     pygame.init()
     menu_font = pygame.font.Font('../assets/fonts/font.ttf', 30)
     title_font = pygame.font.Font('../assets/fonts/font.ttf', 80)
 
-    #initialize menu options
+    # initialize menu options
     first, space = 250, 50
     options = [
-        Option("SCORCHED EARTCH", 20, emptyFunc, title_font),
-        Option("NEW GAME", (first), emptyFunc),
-        Option("OPTIONS", (first + space), emptyFunc),
+        Option("SCORCHED EARTCH", 20, empty_func, title_font),
+        Option("NEW GAME", (first), empty_func),
+        Option("OPTIONS", (first + space), empty_func),
         Option("EXIT", (first + (space * 2)), sys.exit)
     ]
 
-    #initialize effects
+    # initialize effects
     clock = pygame.time.Clock()
     effect = particleEffect.ParticleEffect(screen, (0, 0), (constants.display_width, constants.display_height))
     gravity = effect.CreatePointGravity(strength = -5, pos = (constants.display_width / 2, constants.display_height / 2 + 100))
@@ -134,11 +135,11 @@ if __name__ == '__main__':
     testsource.CreateParticleKeyframe(100, colour = (0, 255, 255), length = 10.0)
     testsource.CreateParticleKeyframe(125, colour = (0, 0, 0), length = 10.0)
 
-    #initialize music
+    # initialize music
     pygame.mixer.music.load('../assets/music/backgroundMenuMusic.mp3')
     pygame.mixer.music.play(-1)
 
-    #mainMenu main loop
+    #  mainMenu main loop
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -148,7 +149,7 @@ if __name__ == '__main__':
         effect.Update()
         effect.Redraw()
 
-        #options loop
+        # options loop
         for option in options:
             if option.rect.collidepoint(pygame.mouse.get_pos()):
                 option.hovered = True
@@ -159,8 +160,8 @@ if __name__ == '__main__':
                 option.hovered = False
             option.draw()
 
-        #draw effect
-        if (not isEffect(pygame.mixer.music.get_pos())):
-            drawBlackScreenEffect()
+        # draw effect
+        if (not is_effect(pygame.mixer.music.get_pos())):
+            draw_black_screen_effect()
 
         pygame.display.update()
