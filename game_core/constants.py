@@ -28,7 +28,7 @@ angle_step = pi/64
 initial_turret_angle = pi/4
 initial_tank_health = 100
 
-# shell constants
+# simple shell constants
 min_shell_speed = 12
 max_shell_speed = 22
 shell_speed_step = (max_shell_speed-min_shell_speed)/100

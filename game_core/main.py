@@ -167,14 +167,7 @@ def game_loop():
         tanks[active_tank].show_tanks_power()
 
         tanks[active_tank].update_turret_angle(angle_change)
-        tanks[active_tank]   .update_tank_power(power_change)
+        tanks[active_tank].update_tank_power(power_change)
         game_display.fill(dark_green, rect=[0, display_height-ground_height, display_width, ground_height])
         pygame.display.update()
         clock.tick(fps)
-
-
-# game_intro()
-game_loop()
-
-pygame.display.update()
-halt_whole_game()
