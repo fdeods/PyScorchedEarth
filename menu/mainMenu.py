@@ -1,5 +1,6 @@
 import particleEffect, particles, sys, pygame
-from game_core import main
+from game_core.main import game_loop
+from game_core.constants import display_width, display_height
 
 class Option:
     hovered = False
@@ -55,7 +56,7 @@ def emptyFunc ():
     pass
 
 if __name__ == '__main__':
-    size = width, height = 1600 , 800
+    size = width, height = display_width, display_height
     screen = pygame.display.set_mode(size)
     bg = pygame.image.load("background.jpg")
     bg = pygame.transform.scale(bg, size)
@@ -65,9 +66,10 @@ if __name__ == '__main__':
     menu_font = pygame.font.Font('font.ttf', 30)
     title_font = pygame.font.Font('font.ttf', 80)
     first, space = 250, 50
+    print("Creating options")
     options = [
-        Option("SCORCHED EARTCH", 20, emptyFunc, title_font),
-        Option("NEW GAME", (first), main.game_loop),
+        Option("SCORCHED EARTH", 20, emptyFunc, title_font),
+        Option("NEW GAME", first, game_loop),
         Option("OPTIONS", (first + space), emptyFunc),
         Option("EXIT", (first + (space * 2)), sys.exit)
     ]
