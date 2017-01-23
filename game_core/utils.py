@@ -12,11 +12,11 @@ def text_object(text, color, size=FontSize.SMALL):
     :return: text object and borders of text as rectangle
     """
     if size == FontSize.SMALL:
-        text_surface = pygame.font.SysFont("comicsansms", 25).render(text, True, color)
+        text_surface = pygame.font.Font('../assets/fonts/font.ttf', 25).render(text, True, color)
     elif size == FontSize.MEDIUM:
-        text_surface = pygame.font.SysFont("comicsansms", 50).render(text, True, color)
+        text_surface = pygame.font.Font('../assets/fonts/font.ttf', 50).render(text, True, color)
     elif size == FontSize.LARGE:
-        text_surface = pygame.font.SysFont("comicsansms", 85).render(text, True, color)
+        text_surface = pygame.font.Font('../assets/fonts/font.ttf', 85).render(text, True, color)
     return text_surface, text_surface.get_rect()
 
 
@@ -44,15 +44,17 @@ def halt_whole_game():
     quit()
 
 
-def animate_explosion(game_display, start_point, size=50):
+def animate_explosion(game_display, start_point, sound, size=50):
     """
     Animates custom explosion on screen on specified coordinates
     :param game_display: display to operate with
     :param size: power (radius) of explosion
     :param start_point: (x,y) coordinates of explosion
+    :param sound: sound of explosion
     :return: none
     """
     clock = pygame.time.Clock()
+    pygame.mixer.Sound.play(sound)
     explode = True
     color_choices = [white, red, green, blue, nice_color]
     while explode:

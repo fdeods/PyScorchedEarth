@@ -2,10 +2,13 @@ import pygame
 from math import sqrt, sin, cos
 from shapely.geometry import LineString
 from game_core.constants import *
-from game_core.utils import text_object
+from game_core.utils import text_object, animate_explosion
 
 
 class Tank:
+    """
+    Class which represents tank object in game
+    """
 
     def __init__(self, game_display, pos, health_bar_pos, color):
         """
@@ -17,13 +20,15 @@ class Tank:
         """
         self.position = pos
         self.health_bar_position = health_bar_pos
-        self.tank_health = initial_tank_health
+        self.tank_health = 1 # initial_tank_health
         self.turret_angle = initial_turret_angle
         self.player_color = color
         self.turret_end_x = 0
         self.turret_end_y = 0
         self.tank_power = 50
         self.game_display = game_display
+        self.explosion_sound = pygame.mixer.Sound("../assets/music/Explosion3.wav")
+        self.fire_sound = pygame.mixer.Sound('../assets/music/Cannon1.wav')
 
     def calculate_distance_from_tank_center(self, explosion_point):
         """
@@ -157,9 +162,9 @@ class Tank:
     def get_init_data_for_shell(self):
         """
         Returns all required parameters to shoot a shell
-        :return: (tank_power, turret_angle, (turret_end_x, turret_end_y))
+        :return: (tank_power, turret_angle, fire_sound, (turret_end_x, turret_end_y))
         """
-        return self.tank_power, self.turret_angle, (self.turret_end_x, self.turret_end_y)
+        return self.tank_power, self.turret_angle, self.fire_sound, (self.turret_end_x, self.turret_end_y)
 
     def show_tanks_power(self):
         """
@@ -187,3 +192,17 @@ class Tank:
                          white,
                          (self.health_bar_position[0], self.health_bar_position[1], 100, 25),
                          2)
+
+    def self_destruct(self):
+        """
+        Animation of self destruction
+        :return: none
+        """
+        animate_explosion(self.game_display, self.position, self.explosion_sound, 100)
+
+    def get_tank_health(self):
+        """
+        Getter for tanks health
+        :return: tank's health
+        """
+        return self.tank_health
