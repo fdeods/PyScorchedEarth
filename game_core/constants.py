@@ -38,9 +38,8 @@ simple_shell_radius = 50
 # temporary simple ground
 ground_height = 73
 
-# temporary enemy tank coordinates
-e_tank_x = int(display_height * 0.1)
-e_tank_y = int(display_height * 0.9)
+# temporary number of tanks to generate
+tanks_number = 3
 
 
 # PyGame fonts

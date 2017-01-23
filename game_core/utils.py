@@ -3,7 +3,7 @@ import random
 from game_core.constants import *
 
 
-def text_object(text, color, size=FontSize.SMALL):
+def sys_text_object(text, color, size=FontSize.SMALL):
     """
     Returns text field as rectangle object
     :param text: text to be placed
@@ -11,16 +11,35 @@ def text_object(text, color, size=FontSize.SMALL):
     :param size: size of the text (small, medium, large)
     :return: text object and borders of text as rectangle
     """
+    font_string = 'comicsansms'
     if size == FontSize.SMALL:
-        text_surface = pygame.font.SysFont("comicsansms", 25).render(text, True, color)
+        text_surface = pygame.font.SysFont(font_string, 25).render(text, True, color)
     elif size == FontSize.MEDIUM:
-        text_surface = pygame.font.SysFont("comicsansms", 50).render(text, True, color)
+        text_surface = pygame.font.SysFont(font_string, 50).render(text, True, color)
     elif size == FontSize.LARGE:
-        text_surface = pygame.font.SysFont("comicsansms", 85).render(text, True, color)
+        text_surface = pygame.font.SysFont(font_string, 85).render(text, True, color)
     return text_surface, text_surface.get_rect()
 
 
-def message_to_screen(game_display, text, color, y_displace=0, size=FontSize.SMALL):
+def custom_text_object(text, color, size=FontSize.SMALL):
+    """
+    Returns text field as rectangle object
+    :param text: text to be placed
+    :param color: color of the text
+    :param size: size of the text (small, medium, large)
+    :return: text object and borders of text as rectangle
+    """
+    font_string = '../assets/fonts/font.ttf'
+    if size == FontSize.SMALL:
+        text_surface = pygame.font.Font(font_string, 25).render(text, True, color)
+    elif size == FontSize.MEDIUM:
+        text_surface = pygame.font.Font(font_string, 50).render(text, True, color)
+    elif size == FontSize.LARGE:
+        text_surface = pygame.font.Font(font_string, 85).render(text, True, color)
+    return text_surface, text_surface.get_rect()
+
+
+def message_to_screen(game_display, text, color, y_displace=0, size=FontSize.SMALL, sys_font=True):
     """
     Places text to screen
     :param game_display: handle to display
@@ -30,7 +49,10 @@ def message_to_screen(game_display, text, color, y_displace=0, size=FontSize.SMA
     :param size: size of the text (small, medium, large)
     :return: none
     """
-    text_surf, text_rect = text_object(text, color, size)
+    if sys_font:
+        text_surf, text_rect = sys_text_object(text, color, size)
+    else:
+        text_surf, text_rect = custom_text_object(text, color, size)
     text_rect.center = (int((display_width / 2)), int((display_height / 2) + y_displace))
     game_display.blit(text_surf, text_rect)
 
@@ -44,15 +66,17 @@ def halt_whole_game():
     quit()
 
 
-def animate_explosion(game_display, start_point, size=50):
+def animate_explosion(game_display, start_point, sound, size=50):
     """
     Animates custom explosion on screen on specified coordinates
     :param game_display: display to operate with
     :param size: power (radius) of explosion
     :param start_point: (x,y) coordinates of explosion
+    :param sound: sound of explosion
     :return: none
     """
     clock = pygame.time.Clock()
+    pygame.mixer.Sound.play(sound)
     explode = True
     color_choices = [white, red, green, blue, nice_color]
     while explode:

@@ -1,9 +1,10 @@
 import pygame
 from math import cos, sin
 from shapely.geometry import LineString
+from random import randrange
 from game_core.constants import *
 from game_core.tank import Tank
-from game_core.utils import animate_explosion, halt_whole_game
+from game_core.utils import animate_explosion, halt_whole_game, message_to_screen
 
 # init game_core and PyGame variables
 pygame.init()
@@ -11,11 +12,38 @@ game_display = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('ScorchedEarth')
 clock = pygame.time.Clock()
 
+strike_earth_sound = pygame.mixer.Sound("../assets/music/Explosion1.wav")
+normal_strike_sound = pygame.mixer.Sound("../assets/music/Explosion2.wav")
+
 
 # temporary enemy tank
-tanks = [Tank(game_display, [e_tank_x, e_tank_y], (10, 10), white),
-         Tank(game_display, [int(display_width * 0.9), int(display_height * 0.9)], (1490, 10), white)]
+tanks = []
 active_tank = 1
+
+
+def reinitialize_tanks():
+    """
+    Reinitialize available tanks in the game
+    :return: none
+    """
+    global tanks
+    tanks = []
+    initial_y_coord = int(display_height*0.9)
+    tab = 5+int(tank_width/2)
+    health_bar_positions = [(10, 10), (1490, 10), (10, 45), (1490, 45)]
+    for i in range(tanks_number):
+        generate = True
+        while generate:
+            tank_pos_x = randrange(tab, display_width-tab)
+            # print(tank_pos_x)
+            good_choice = True
+            for tank in tanks:
+                if abs(tank_pos_x - tank.get_tank_position()[0]) < tank_width+10:
+                    good_choice = False
+                    break
+            if good_choice:
+                tanks.append(Tank(game_display, (tank_pos_x, initial_y_coord), health_bar_positions[i], white))
+                generate = False
 
 
 def check_collision(prev_shell_position, current_shell_position):
@@ -48,7 +76,8 @@ def fire_simple_shell(tank_object):
     :param tank_object: tank object that shoots the shell
     :return: none
     """
-    (power, gun_angle, gun_end_coord) = tank_object.get_init_data_for_shell()
+    (power, gun_angle, fire_sound, gun_end_coord) = tank_object.get_init_data_for_shell()
+    pygame.mixer.Sound.play(fire_sound)
     speed = min_shell_speed+shell_speed_step*power
     shell_position = list(gun_end_coord)
     elapsed_time = 0.1
@@ -73,7 +102,7 @@ def fire_simple_shell(tank_object):
         collision_point = check_collision(prev_shell_position, shell_position)
 
         if collision_point:
-            animate_explosion(game_display, collision_point, simple_shell_radius)
+            animate_explosion(game_display, collision_point, strike_earth_sound, simple_shell_radius)
             for tank in tanks:
                 tank.apply_damage(collision_point, simple_shell_power, simple_shell_radius)
             fire = False
@@ -110,8 +139,25 @@ def game_intro():
                     intro = False
 
 
+def update_tanks_list():
+    """
+    Check which tanks are present in the game and delete destroyed ones
+    :return: none
+    """
+    global tanks
+    left_tanks = []
+    for tank in tanks:
+        if tank.get_tank_health() == 0:
+            tank.self_destruct()
+        else:
+            left_tanks.append(tank)
+    tanks = left_tanks
+
+
 def game_loop():
+    global tanks
     global active_tank
+    reinitialize_tanks()
     game_exit = False
     game_over = False
     fps = 15
@@ -121,8 +167,9 @@ def game_loop():
 
     while not game_exit:
         if game_over:
-            message_to_screen("Game over", red, -50, FontSize.LARGE)
-            message_to_screen("S - play again, Q - quit", green, 50)
+            message_to_screen(game_display, "Game over", red, -50, FontSize.LARGE, sys_font=False)
+            message_to_screen(game_display, "S - play again", green, 50, sys_font=False)
+            message_to_screen(game_display, "Q - quit", green, 80, sys_font=False)
             pygame.display.update()
             while game_over:
                 for event in pygame.event.get():
@@ -131,7 +178,10 @@ def game_loop():
                             game_exit = True
                             game_over = False
                         if event.key == pygame.K_s:
-                            game_loop()
+                            reinitialize_tanks()
+                            game_exit = False
+                            game_over = False
+                            break
                     elif event.type == pygame.QUIT:
                         game_exit = True
                         game_over = False
@@ -152,7 +202,8 @@ def game_loop():
                     angle_change = angle_step
                 elif event.key == pygame.K_SPACE:
                     fire_simple_shell(tanks[active_tank])
-                    active_tank = (active_tank + 1) % 2
+                    update_tanks_list()
+                    active_tank = (active_tank + 1) % len(tanks)
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
                     angle_change = 0
@@ -164,6 +215,9 @@ def game_loop():
             tank.draw_tank()
             tank.draw_health_bar()
 
+        if len(tanks) == 1:
+            game_over = True
+
         tanks[active_tank].show_tanks_power()
 
         tanks[active_tank].update_turret_angle(angle_change)
@@ -171,3 +225,5 @@ def game_loop():
         game_display.fill(dark_green, rect=[0, display_height-ground_height, display_width, ground_height])
         pygame.display.update()
         clock.tick(fps)
+
+game_loop()
