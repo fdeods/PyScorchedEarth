@@ -101,14 +101,14 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
 
     #initialize pictures
-    light = pygame.image.load('circle.png')
-    bg = pygame.image.load("background.jpg")
+    light = pygame.image.load('../assets/images/circle.png')
+    bg = pygame.image.load("../assets/images/background.jpg")
     bg = pygame.transform.scale(bg, size)
 
     #initialize fonts
     pygame.init()
-    menu_font = pygame.font.Font('font.ttf', 30)
-    title_font = pygame.font.Font('font.ttf', 80)
+    menu_font = pygame.font.Font('../assets/fonts/font.ttf', 30)
+    title_font = pygame.font.Font('../assets/fonts/font.ttf', 80)
 
     #initialize menu options
     first, space = 250, 50
@@ -135,7 +135,7 @@ if __name__ == '__main__':
     testsource.CreateParticleKeyframe(125, colour = (0, 0, 0), length = 10.0)
 
     #initialize music
-    pygame.mixer.music.load('backgroundMenuMusic.mp3')
+    pygame.mixer.music.load('../assets/music/backgroundMenuMusic.mp3')
     pygame.mixer.music.play(-1)
 
     #mainMenu main loop
