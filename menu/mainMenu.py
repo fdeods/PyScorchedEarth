@@ -1,7 +1,7 @@
 import sys, pygame
 from game_core import constants
 from libs.pyIgnition import particleEffect, particles
-# from game_core import main
+from game_core.main import game_loop
 
 
 class Option:
@@ -106,15 +106,15 @@ if __name__ == '__main__':
     bg = pygame.transform.scale(bg, size)
 
     #initialize fonts
-    pygame.init()
+    #pygame.init()
     menu_font = pygame.font.Font('../assets/fonts/font.ttf', 30)
     title_font = pygame.font.Font('../assets/fonts/font.ttf', 80)
 
     #initialize menu options
     first, space = 250, 50
     options = [
-        Option("SCORCHED EARTCH", 20, emptyFunc, title_font),
-        Option("NEW GAME", (first), emptyFunc),
+        Option("SCORCHED EARTH", 20, emptyFunc, title_font),
+        Option("NEW GAME", first, game_loop),
         Option("OPTIONS", (first + space), emptyFunc),
         Option("EXIT", (first + (space * 2)), sys.exit)
     ]

@@ -210,4 +210,4 @@ def game_loop():
         pygame.display.update()
         clock.tick(fps)
 
-game_loop()
+#game_loop()
