@@ -13,7 +13,9 @@ clock = pygame.time.Clock()
 
 
 # temporary enemy tank
-enemy_tank = Tank(game_display, [e_tank_x, e_tank_y], (10, 10), white)
+tanks = [Tank(game_display, [e_tank_x, e_tank_y], (10, 10), white),
+         Tank(game_display, [int(display_width * 0.9), int(display_height * 0.9)], (1490, 10), white)]
+active_tank = 1
 
 
 def check_collision(prev_shell_position, current_shell_position):
@@ -27,9 +29,11 @@ def check_collision(prev_shell_position, current_shell_position):
     line2 = LineString([[0, display_height-ground_height], [display_width, display_height-ground_height]])
 
     # temporary check if we hit enemy tank
-    intersection = enemy_tank.check_collision_with_tank(line1)
-    if intersection:
-        return intersection
+
+    for tank in tanks:
+        intersection = tank.check_collision_with_tank(line1)
+        if intersection:
+            return intersection
 
     intersection = line1.intersection(line2)
 
@@ -70,8 +74,8 @@ def fire_simple_shell(tank_object):
 
         if collision_point:
             animate_explosion(game_display, collision_point, simple_shell_radius)
-            if enemy_tank.apply_damage(collision_point, simple_shell_power, simple_shell_radius):
-                print("YOU WON")
+            for tank in tanks:
+                tank.apply_damage(collision_point, simple_shell_power, simple_shell_radius)
             fire = False
         else:
             pygame.draw.circle(game_display, red, (shell_position[0], shell_position[1]), 5)
@@ -107,15 +111,13 @@ def game_intro():
 
 
 def game_loop():
+    global active_tank
     game_exit = False
     game_over = False
     fps = 15
 
-    move_tank = 0
     angle_change = 0
     power_change = 0
-
-    my_tank = Tank(game_display, [int(display_width * 0.9), int(display_height * 0.9)], (1490, 10), white)
 
     while not game_exit:
         if game_over:
@@ -139,41 +141,33 @@ def game_loop():
                 game_exit = True
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
-                    # change angle
-                    angle_change = angle_step
+                    power_change = 1
                 elif event.key == pygame.K_DOWN:
+                    power_change = -1
+                elif event.key == pygame.K_LEFT:
                     # change angle
                     angle_change = -angle_step
-                elif event.key == pygame.K_LEFT:
-                    # move tank left
-                    move_tank = -move_step
                 elif event.key == pygame.K_RIGHT:
-                    # move tank right
-                    move_tank = move_step
+                    # change angle
+                    angle_change = angle_step
                 elif event.key == pygame.K_SPACE:
-                    fire_simple_shell(my_tank)
-                elif event.key == pygame.K_z:
-                    power_change = 1
-                elif event.key == pygame.K_x:
-                    power_change = -1
+                    fire_simple_shell(tanks[active_tank])
+                    active_tank = (active_tank + 1) % 2
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
-                    move_tank = 0
-                elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     angle_change = 0
-                elif event.key == pygame.K_z or event.key == pygame.K_x:
+                elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     power_change = 0
 
         game_display.fill(black)
-        gun = my_tank.draw_tank()
-        enemy_tank.draw_tank()
-        my_tank.draw_health_bar()
-        enemy_tank.draw_health_bar()
-        my_tank.show_tanks_power()
+        for tank in tanks:
+            tank.draw_tank()
+            tank.draw_health_bar()
 
-        my_tank.update_tank_coordinates(move_tank)
-        my_tank.update_turret_angle(angle_change)
-        my_tank.update_tank_power(power_change)
+        tanks[active_tank].show_tanks_power()
+
+        tanks[active_tank].update_turret_angle(angle_change)
+        tanks[active_tank]   .update_tank_power(power_change)
         game_display.fill(dark_green, rect=[0, display_height-ground_height, display_width, ground_height])
         pygame.display.update()
         clock.tick(fps)
