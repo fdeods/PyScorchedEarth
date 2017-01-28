@@ -93,7 +93,7 @@ def empty_func():
 def draw_black_screen_effect():
     filter = pygame.surface.Surface((constants.display_width, constants.display_height))
     filter.fill(pygame.color.Color('White'))
-    filter.blit(light, tuple(map(lambda x: x - 50, pygame.mouse.get_pos())))
+    filter.blit(light, tuple(map(lambda x: x - 150, pygame.mouse.get_pos())))
     screen.blit(filter, (0, 0), special_flags=pygame.BLEND_RGBA_SUB)
     pygame.display.flip()
 
@@ -103,6 +103,7 @@ if __name__ == '__main__':
 
     # initialize pictures
     light = pygame.image.load('../assets/images/circle.png')
+    light = pygame.transform.scale(light, (300, 300))
     bg = pygame.image.load("../assets/images/background.jpg")
     bg = pygame.transform.scale(bg, size)
 

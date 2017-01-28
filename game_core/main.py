@@ -1,9 +1,11 @@
 import pygame
+import time
 from math import cos, sin
 from shapely.geometry import LineString
-from random import randrange
+from random import randrange, choice
 from game_core.constants import *
 from game_core.tank import Tank
+from game_core.player import Player
 from game_core.utils import animate_explosion, halt_whole_game, message_to_screen
 
 # init game_core and PyGame variables
@@ -17,33 +19,18 @@ normal_strike_sound = pygame.mixer.Sound("../assets/music/Explosion2.wav")
 
 
 # temporary enemy tank
-tanks = []
-active_tank = 1
+players = []
 
 
-def reinitialize_tanks():
+def reinitialize_players():
     """
     Reinitialize available tanks in the game
     :return: none
     """
-    global tanks
-    tanks = []
-    initial_y_coord = int(display_height*0.9)
-    tab = 5+int(tank_width/2)
-    health_bar_positions = [(10, 10), (1490, 10), (10, 45), (1490, 45)]
-    for i in range(tanks_number):
-        generate = True
-        while generate:
-            tank_pos_x = randrange(tab, display_width-tab)
-            # print(tank_pos_x)
-            good_choice = True
-            for tank in tanks:
-                if abs(tank_pos_x - tank.get_tank_position()[0]) < tank_width+10:
-                    good_choice = False
-                    break
-            if good_choice:
-                tanks.append(Tank(game_display, (tank_pos_x, initial_y_coord), health_bar_positions[i], white))
-                generate = False
+    init_tanks_positions = []
+    for player in players:
+        player.initialize_tanks(init_tanks_positions)
+    print(init_tanks_positions)
 
 
 def check_collision(prev_shell_position, current_shell_position):
@@ -139,25 +126,23 @@ def game_intro():
                     intro = False
 
 
-def update_tanks_list():
-    """
-    Check which tanks are present in the game and delete destroyed ones
-    :return: none
-    """
-    global tanks
-    left_tanks = []
-    for tank in tanks:
-        if tank.get_tank_health() == 0:
-            tank.self_destruct()
-        else:
-            left_tanks.append(tank)
-    tanks = left_tanks
+def update_players():
+    global players
+    left_players = []
+    for player in players:
+        if player.update_tanks_list():
+            left_players.append(player)
+
+    players = left_players
 
 
 def game_loop():
-    global tanks
-    global active_tank
-    reinitialize_tanks()
+    global players
+    for i in range(players_number):
+        players.append(Player(game_display, tanks_number, choice(player_colors), i))
+    reinitialize_players()
+    active_player = 0
+    active_tank = players[0].get_active_tank()
     game_exit = False
     game_over = False
     fps = 15
@@ -178,7 +163,7 @@ def game_loop():
                             game_exit = True
                             game_over = False
                         if event.key == pygame.K_s:
-                            reinitialize_tanks()
+                            reinitialize_players()
                             game_exit = False
                             game_over = False
                             break
@@ -201,9 +186,9 @@ def game_loop():
                     # change angle
                     angle_change = angle_step
                 elif event.key == pygame.K_SPACE:
-                    fire_simple_shell(tanks[active_tank])
-                    update_tanks_list()
-                    active_tank = (active_tank + 1) % len(tanks)
+                    fire_simple_shell(active_tank)
+                    update_players()
+                    active_tank = players[(active_player + 1) % len(players)].get_active_tank()
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
                     angle_change = 0
@@ -211,19 +196,34 @@ def game_loop():
                     power_change = 0
 
         game_display.fill(black)
-        for tank in tanks:
-            tank.draw_tank()
-            tank.draw_health_bar()
+        for player in players:
+            player.draw_tanks_and_bars()
 
-        if len(tanks) == 1:
+        if len(players) == 1:
             game_over = True
 
-        tanks[active_tank].show_tanks_power()
+        active_tank.show_tanks_power()
 
-        tanks[active_tank].update_turret_angle(angle_change)
-        tanks[active_tank].update_tank_power(power_change)
+        active_tank.update_turret_angle(angle_change)
+        active_tank.update_tank_power(power_change)
         game_display.fill(dark_green, rect=[0, display_height-ground_height, display_width, ground_height])
         pygame.display.update()
         clock.tick(fps)
 
+'''
+player1 = Player(game_display, 5, red, 0)
+player2 = Player(game_display, 5, red, 1)
+player3 = Player(game_display, 5, red, 2)
+player4 = Player(game_display, 5, red, 3)
+tank_poss = []
+player1.initialize_tanks(tank_poss)
+player2.initialize_tanks(tank_poss)
+player3.initialize_tanks(tank_poss)
+player4.initialize_tanks(tank_poss)
+print(tank_poss)
+player1.draw_tanks_and_bars()
+player2.draw_tanks_and_bars()
+player3.draw_tanks_and_bars()
+player4.draw_tanks_and_bars()
+'''
 game_loop()

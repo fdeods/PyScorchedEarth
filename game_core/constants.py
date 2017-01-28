@@ -16,6 +16,7 @@ low_health_color = red
 blue = (0, 0, 255)
 nice_color = (0xfd, 0x30, 0xd5)
 dark_green = (0x13, 0x70, 0x2c)
+player_colors = [white, red, green, blue, nice_color]
 
 # tank constants
 tank_width = 40
@@ -38,8 +39,11 @@ simple_shell_radius = 50
 # temporary simple ground
 ground_height = 73
 
-# temporary number of tanks to generate
-tanks_number = 3
+# player settings
+health_bar_init_positions = [(10, 10), (1490, 10), (10, 45), (1490, 45)]
+health_bar_length = 100
+players_number = 4
+tanks_number = 5
 
 
 # PyGame fonts
