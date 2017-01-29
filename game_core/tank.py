@@ -198,7 +198,7 @@ class Tank:
         Animation of self destruction
         :return: none
         """
-        animate_explosion(self.game_display, self.position, self.explosion_sound, 100)
+        animate_explosion(self.game_display, self.position, self.explosion_sound, tank_explosion_radius)
 
     def get_tank_health(self):
         """

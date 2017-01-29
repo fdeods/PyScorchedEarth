@@ -26,14 +26,16 @@ turret_length = int(tank_width/2) + 5
 wheel_width = 5
 move_step = 3
 angle_step = pi/64
-initial_turret_angle = pi/4
+initial_turret_angle = 0 #pi/4
 initial_tank_health = 100
+tank_explosion_power = 15
+tank_explosion_radius = 100
 
 # simple shell constants
 min_shell_speed = 12
 max_shell_speed = 22
 shell_speed_step = (max_shell_speed-min_shell_speed)/100
-simple_shell_power = 20
+simple_shell_power = 30
 simple_shell_radius = 50
 
 # temporary simple ground
