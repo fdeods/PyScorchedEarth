@@ -1,12 +1,18 @@
 from random import randrange
 from game_core.constants import display_height, display_width, tank_width, health_bar_length, health_bar_init_positions
 from game_core.tank import Tank
-from time import sleep
 
 
 class Player:
 
     def __init__(self, game_display, number_of_tanks, color, player_number):
+        """
+        Initialize player
+        :param game_display: main game screen
+        :param number_of_tanks: initial number of tanks
+        :param color: player's color
+        :param player_number: players number, relevant in choosing health bar positions
+        """
         self.number_of_tanks = number_of_tanks
         self.color = color
         self.player_number = player_number
@@ -47,14 +53,19 @@ class Player:
         self.in_game = True
 
     def draw_tanks_and_bars(self):
+        """
+        Draw all active tanks and their health bars
+        :return: none
+        """
         for tank in self.active_tanks:
             tank.draw_tank()
             tank.draw_health_bar()
 
     def update_tanks_list(self):
         """
-        Check which tanks are present in the game and delete destroyed ones
-        :return: true if player still has tanks, otherwise false
+        Check which tanks are present in the game and delete destroyed ones, sets up next tank, sets up if player is
+        still active
+        :return: none
         """
         left_tanks = []
         for tank in self.active_tanks:
@@ -80,6 +91,11 @@ class Player:
             self.active_tanks = left_tanks
 
     def check_collision_with_tanks(self, line):
+        """
+        Checks if collision took place with any of the player's tanks
+        :param line: last line of shell trajectory
+        :return: collision point as tuple if collision took place, None otherwise
+        """
         for tank in self.active_tanks:
             intersection = tank.check_collision_with_tank(line)
             if intersection:
@@ -87,6 +103,13 @@ class Player:
         return None
 
     def apply_damage(self, collision_point, shell_power, shell_radius):
+        """
+        Applies if necessary any damage to each tank of the player
+        :param collision_point: coordinates of collision/eplosion
+        :param shell_power: power of explosion
+        :param shell_radius: radius of explosion
+        :return: returns coordinates of destroyed tanks, so that tanks exposions could be applied
+        """
         destructed_tanks = []
         for tank in self.active_tanks:
             if tank.apply_damage(collision_point, shell_power, shell_radius):
@@ -95,10 +118,18 @@ class Player:
         return destructed_tanks
 
     def next_active_tank(self):
+        """
+        Get active tank and setup next one
+        :return: player's active tank
+        """
         ret_tank = self.next_tank
         if ret_tank:
             self.next_tank = self.active_tanks[(self.active_tanks.index(self.next_tank) + 1) % len(self.active_tanks)]
         return ret_tank
 
     def is_in_game(self):
+        """
+        Tells if the player is still in game
+        :return: flag True/False
+        """
         return self.in_game

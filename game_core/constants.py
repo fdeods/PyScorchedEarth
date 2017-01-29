@@ -16,7 +16,9 @@ low_health_color = red
 blue = (0, 0, 255)
 nice_color = (0xfd, 0x30, 0xd5)
 dark_green = (0x13, 0x70, 0x2c)
-player_colors = [white, red, green, blue, nice_color]
+orange = (0xDC, 0x64, 0x0F)
+dark_gray = (0x54, 0x4C, 0x46)
+player_colors = [red, green, blue, nice_color, orange, dark_gray]
 
 # tank constants
 tank_width = 40
@@ -26,7 +28,7 @@ turret_length = int(tank_width/2) + 5
 wheel_width = 5
 move_step = 3
 angle_step = pi/64
-initial_turret_angle = 0 #pi/4
+initial_turret_angle = -pi/2
 initial_tank_health = 100
 tank_explosion_power = 15
 tank_explosion_radius = 100

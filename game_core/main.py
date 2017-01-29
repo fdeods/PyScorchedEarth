@@ -78,7 +78,7 @@ def fire_simple_shell(tank_object):
     :param tank_object: tank object that shoots the shell
     :return: none
     """
-    (power, gun_angle, fire_sound, gun_end_coord) = tank_object.get_init_data_for_shell()
+    (power, gun_angle, fire_sound, color, gun_end_coord) = tank_object.get_init_data_for_shell()
     pygame.mixer.Sound.play(fire_sound)
     speed = min_shell_speed+shell_speed_step*power
     shell_position = list(gun_end_coord)
@@ -108,7 +108,7 @@ def fire_simple_shell(tank_object):
             apply_players_damages(collision_point, simple_shell_power, simple_shell_radius)
             fire = False
         else:
-            pygame.draw.circle(game_display, red, (shell_position[0], shell_position[1]), 5)
+            pygame.draw.circle(game_display, color, (shell_position[0], shell_position[1]), 5)
 
         pygame.display.update()
         clock.tick(60)
@@ -200,6 +200,7 @@ def game_loop():
             game_over = True
 
         if active_tank:
+            active_tank.show_tank_special()
             active_tank.show_tanks_power()
             active_tank.update_turret_angle(angle_change)
             active_tank.update_tank_power(power_change)

@@ -3,6 +3,7 @@ from math import sqrt, sin, cos
 from shapely.geometry import LineString
 from game_core.constants import *
 from game_core.utils import sys_text_object, animate_explosion
+from random import randint
 
 
 class Tank:
@@ -21,7 +22,7 @@ class Tank:
         self.position = list(pos)
         self.health_bar_position = health_bar_pos
         self.tank_health = initial_tank_health
-        self.turret_angle = initial_turret_angle
+        self.turret_angle = initial_turret_angle + (randint(0, pi/angle_step) * angle_step)
         self.player_color = color
         self.turret_end_x = 0
         self.turret_end_y = 0
@@ -29,6 +30,7 @@ class Tank:
         self.game_display = game_display
         self.explosion_sound = pygame.mixer.Sound("../assets/music/Explosion3.wav")
         self.fire_sound = pygame.mixer.Sound('../assets/music/Cannon1.wav')
+        self.special_counter = 0
 
     def calculate_distance_from_tank_center(self, explosion_point):
         """
@@ -162,9 +164,10 @@ class Tank:
     def get_init_data_for_shell(self):
         """
         Returns all required parameters to shoot a shell
-        :return: (tank_power, turret_angle, fire_sound, (turret_end_x, turret_end_y))
+        :return: (tank_power, turret_angle, fire_sound, color, (turret_end_x, turret_end_y))
         """
-        return self.tank_power, self.turret_angle, self.fire_sound, (self.turret_end_x, self.turret_end_y)
+        ret_color = self.player_color
+        return self.tank_power, self.turret_angle, self.fire_sound, ret_color, (self.turret_end_x, self.turret_end_y)
 
     def show_tanks_power(self):
         """
@@ -174,7 +177,7 @@ class Tank:
         (text_surface, rect_size) = sys_text_object("Power: " + str(self.tank_power) + "%", white, FontSize.SMALL)
         self.game_display.blit(text_surface, [int(display_width / 2) - int(rect_size.width / 2), 10])
 
-    def draw_health_bar(self):
+    def draw_health_bar(self, active=False):
         """
         Draws health bar of a tank on the screen
         :return: none
@@ -185,6 +188,8 @@ class Tank:
         elif self.tank_health > 40:
             color = normal_health_color
 
+        if active:
+            color = white
         pygame.draw.rect(self.game_display,
                          color,
                          (self.health_bar_position[0], self.health_bar_position[1], self.tank_health, 25))
@@ -213,3 +218,13 @@ class Tank:
         :return: tank_position as tuple (x, y)
         """
         return self.position[0], self.position[1]
+
+    def show_tank_special(self):
+        self.special_counter += 1
+        if self.special_counter % 10 == 0:
+            real_color = self.player_color
+            self.player_color = white
+            self.draw_tank()
+            self.draw_health_bar(True)
+            self.player_color = real_color
+            self.special_counter = 0
