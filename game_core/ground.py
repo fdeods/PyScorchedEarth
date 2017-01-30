@@ -49,3 +49,7 @@ class Ground:
         if x_coord < 0 or x_coord >= display_width:
             return display_height
         return self.points[x_coord][1]
+
+    def correct_heights(self, interval, new_height):
+        for i in range(interval[0], interval[1]):
+            self.points[i][1] = new_height

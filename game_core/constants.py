@@ -26,6 +26,7 @@ tank_height = 12
 turret_width = 3
 turret_length = int(tank_width/2) + 5
 wheel_width = 5
+full_tank_height = tank_height + wheel_width
 move_step = 3
 angle_step = pi/64
 initial_turret_angle = -pi/2
@@ -47,8 +48,8 @@ ground_height_max = 600
 # player settings
 health_bar_init_positions = [(10, 10), (1490, 10), (10, 45), (1490, 45)]
 health_bar_length = 100
-players_number = 4
-tanks_number = 5
+players_number = 2
+tanks_number = 1
 
 
 # PyGame fonts

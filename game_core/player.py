@@ -43,10 +43,15 @@ class Player:
                         good_choice = False
                         break
                 if good_choice:
-                    ground_height = ground.get_ground_height_at_point(tank_pos_x)
-                    initial_y_coord = ground_height - tank_height - wheel_width
+                    ground_heights = []
+                    for index in range(tank_pos_x-int(tank_width/2), tank_pos_x+int(tank_width/2)):
+                        ground_heights.append(ground.get_ground_height_at_point(index))
+                    ground_height = max(ground_heights)
+                    initial_y_coord = ground_height - full_tank_height
                     self.active_tanks.append(
                         Tank(self.game_display, (tank_pos_x, initial_y_coord), health_bar_positions[i], self.color))
+                    ground.correct_heights((tank_pos_x-int(tank_width/2), tank_pos_x+int(tank_width/2)),
+                                           initial_y_coord)
                     actual_tanks_positions.append((tank_pos_x, initial_y_coord))
                     generate = False
         self.next_tank = self.active_tanks[0]
