@@ -1,5 +1,5 @@
 from random import randrange
-from game_core.constants import display_height, display_width, tank_width, health_bar_length, health_bar_init_positions
+from game_core.constants import *
 from game_core.tank import Tank
 
 
@@ -22,13 +22,12 @@ class Player:
         self.next_tank = None
         self.in_game = False
 
-    def initialize_tanks(self, actual_tanks_positions):
+    def initialize_tanks(self, actual_tanks_positions, ground):
         """
         Reinitialize available tanks in the game of specified player
         :return: none
         """
         self.active_tanks = []
-        initial_y_coord = int(display_height*0.9)
         tab = 5+int(tank_width/2)
         # initialize possible health bar positions
         health_bar_positions = [(self.health_bars_pos[0] + (health_bar_length+10)*i*(-1)**self.player_number,
@@ -38,13 +37,14 @@ class Player:
             generate = True
             while generate:
                 tank_pos_x = randrange(tab, display_width-tab)
-                # print(tank_pos_x)
                 good_choice = True
                 for tank in actual_tanks_positions:
                     if abs(tank_pos_x - tank[0]) < tank_width+10:
                         good_choice = False
                         break
                 if good_choice:
+                    ground_height = ground.get_ground_height_at_point(tank_pos_x)
+                    initial_y_coord = ground_height - tank_height - wheel_width
                     self.active_tanks.append(
                         Tank(self.game_display, (tank_pos_x, initial_y_coord), health_bar_positions[i], self.color))
                     actual_tanks_positions.append((tank_pos_x, initial_y_coord))
@@ -80,8 +80,6 @@ class Player:
             self.active_tanks = []
         else:
             if self.next_tank not in left_tanks:
-                init_index = self.active_tanks.index(self.next_tank)
-                print(init_index)
                 while True:
                     self.next_tank = \
                         self.active_tanks[(self.active_tanks.index(self.next_tank) + 1) % len(self.active_tanks)]

@@ -31,6 +31,7 @@ def reinitialize_players():
     global players
     global active_player
     global ground
+    ground = Ground(game_display)
     players = []
     left_colors = player_colors[:]
     for i in range(players_number):
@@ -39,9 +40,8 @@ def reinitialize_players():
         players.append(Player(game_display, tanks_number, chosen_color, i))
     init_tanks_positions = []
     for player in players:
-        player.initialize_tanks(init_tanks_positions)
+        player.initialize_tanks(init_tanks_positions, ground)
     active_player = players[0]
-    ground = Ground(game_display)
 
 
 def check_collision(prev_shell_position, current_shell_position):
@@ -192,6 +192,7 @@ def game_loop():
                     power_change = 0
 
         game_display.fill(black)
+        ground.draw()
         for player in players:
             player.draw_tanks_and_bars()
 
@@ -204,7 +205,7 @@ def game_loop():
             active_tank.update_turret_angle(angle_change)
             active_tank.update_tank_power(power_change)
 
-        ground.draw()
+
         pygame.display.update()
         clock.tick(fps)
 
