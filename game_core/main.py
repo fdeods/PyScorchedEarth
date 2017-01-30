@@ -1,10 +1,11 @@
 import pygame
 from math import cos, sin
 from shapely.geometry import LineString
-from random import randrange, choice
+from random import choice
 from game_core.constants import *
 from game_core.player import Player
 from game_core.utils import animate_explosion, halt_whole_game, message_to_screen
+from game_core.ground import Ground
 
 # init game_core and PyGame variables
 pygame.init()
@@ -19,6 +20,7 @@ normal_strike_sound = pygame.mixer.Sound("../assets/music/Explosion2.wav")
 # temporary enemy tank
 players = []
 active_player = None
+ground = None
 
 
 def reinitialize_players():
@@ -28,6 +30,7 @@ def reinitialize_players():
     """
     global players
     global active_player
+    global ground
     players = []
     left_colors = player_colors[:]
     for i in range(players_number):
@@ -38,6 +41,7 @@ def reinitialize_players():
     for player in players:
         player.initialize_tanks(init_tanks_positions)
     active_player = players[0]
+    ground = Ground(game_display)
 
 
 def check_collision(prev_shell_position, current_shell_position):
@@ -48,18 +52,13 @@ def check_collision(prev_shell_position, current_shell_position):
     :return: Coordinates of collision or None if no collision detected
     """
     line1 = LineString([prev_shell_position, current_shell_position])
-    line2 = LineString([[0, display_height-ground_height], [display_width, display_height-ground_height]])
 
     for player in players:
         intersection = player.check_collision_with_tanks(line1)
         if intersection:
             return intersection
 
-    intersection = line1.intersection(line2)
-
-    if intersection:
-        return int(intersection.x), int(intersection.y)
-    return None
+    return ground.check_collision(line1)
 
 
 def apply_players_damages(collision_point, shell_power, shell_radius):
@@ -205,7 +204,7 @@ def game_loop():
             active_tank.update_turret_angle(angle_change)
             active_tank.update_tank_power(power_change)
 
-        game_display.fill(dark_green, rect=[0, display_height-ground_height, display_width, ground_height])
+        ground.draw()
         pygame.display.update()
         clock.tick(fps)
 
