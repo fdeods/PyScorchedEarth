@@ -124,13 +124,13 @@ if __name__ == '__main__':
     # initialize effects
     clock = pygame.time.Clock()
     effect = particleEffect.ParticleEffect(screen, (0, 0), (constants.display_width, constants.display_height))
-    gravity = effect.CreatePointGravity(strength = -5, pos = (constants.display_width / 2, constants.display_height / 2 + 100))
-    testsource = effect.CreateSource((-10, -10), initspeed = 5.0, initdirection = 2.35619449, initspeedrandrange = 2.0, initdirectionrandrange = 1.5, particlesperframe = 5, particlelife = 75, drawtype = particles.DRAWTYPE_SCALELINE, colour = (255, 255, 255), length = 10.0)
+    gravity = effect.CreatePointGravity(strength = 30, pos = (constants.display_width / 2, constants.display_height / 2))
+    testsource = effect.CreateSource((-10, -10), initspeed = 10.0, initdirection = 2.5, initspeedrandrange = 2.0, initdirectionrandrange =0, particlesperframe = 5, particlelife = 175, drawtype = particles.DRAWTYPE_SCALELINE, colour = (255, 255, 255), length = 10.0)
     testsource.CreateParticleKeyframe(50, colour = (3, 74, 236), length = 10.0)
     testsource.CreateParticleKeyframe(75, colour = (255, 255, 0), length = 10.0)
     testsource.CreateParticleKeyframe(100, colour = (0, 255, 255), length = 10.0)
     testsource.CreateParticleKeyframe(125, colour = (0, 0, 0), length = 10.0)
-    testsource = effect.CreateSource((constants.display_width + 10, 0), initspeed = 5.0, initdirection = 4.15619449, initspeedrandrange = 2.0, initdirectionrandrange = 1.5, particlesperframe = 5, particlelife = 75, drawtype = particles.DRAWTYPE_SCALELINE, colour = (255, 255, 255), length = 10.0)
+    testsource = effect.CreateSource((constants.display_width + 10, 0), initspeed = 10.0, initdirection = 3.8, initspeedrandrange = 2.0, initdirectionrandrange = 0, particlesperframe = 5, particlelife = 175, drawtype = particles.DRAWTYPE_SCALELINE, colour = (255, 255, 255), length = 10.0)
     testsource.CreateParticleKeyframe(50, colour = (3, 74, 236), length = 10.0)
     testsource.CreateParticleKeyframe(75, colour = (255, 255, 0), length = 10.0)
     testsource.CreateParticleKeyframe(100, colour = (0, 255, 255), length = 10.0)
@@ -163,6 +163,7 @@ if __name__ == '__main__':
 
         # draw effect
         if (not is_effect(pygame.mixer.music.get_pos())):
-            draw_black_screen_effect()
+            pass
+            #draw_black_screen_effect()
 
         pygame.display.update()
