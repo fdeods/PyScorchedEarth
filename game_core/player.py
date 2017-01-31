@@ -43,19 +43,23 @@ class Player:
                         good_choice = False
                         break
                 if good_choice:
-                    ground_heights = []
-                    for index in range(tank_pos_x-int(tank_width/2), tank_pos_x+int(tank_width/2)):
-                        ground_heights.append(ground.get_ground_height_at_point(index))
-                    ground_height = max(ground_heights)
+                    ground_height = self.define_optimal_height(tank_pos_x, ground)
                     initial_y_coord = ground_height - full_tank_height
                     self.active_tanks.append(
                         Tank(self.game_display, (tank_pos_x, initial_y_coord), health_bar_positions[i], self.color))
                     ground.correct_heights((tank_pos_x-int(tank_width/2), tank_pos_x+int(tank_width/2)),
-                                           initial_y_coord)
+                                           ground_height)
                     actual_tanks_positions.append((tank_pos_x, initial_y_coord))
                     generate = False
         self.next_tank = self.active_tanks[0]
         self.in_game = True
+
+    def define_optimal_height(self, x_coord, ground):
+        ground_heights = []
+        for index in range(x_coord - int(tank_width / 2), x_coord + int(tank_width / 2)):
+            ground_heights.append(ground.get_ground_height_at_point(index))
+        #return int(sum(ground_heights)/len(ground_heights))
+        return max(ground_heights)
 
     def draw_tanks_and_bars(self):
         """
@@ -136,3 +140,12 @@ class Player:
         :return: flag True/False
         """
         return self.in_game
+
+    def correct_tanks_heights(self, ground):
+        for tank in self.active_tanks:
+            tank_pos_x = tank.get_tank_position()[0]
+            opt_height = self.define_optimal_height(tank.get_tank_position()[0], ground)
+            new_height = opt_height - full_tank_height
+            tank.update_tank_position((tank_pos_x, new_height))
+            ground.correct_heights((tank_pos_x-int(tank_width/2), tank_pos_x+int(tank_width/2)),
+                                   opt_height)

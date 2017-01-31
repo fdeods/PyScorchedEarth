@@ -1,6 +1,6 @@
 import pygame
 from math import cos, sin
-from shapely.geometry import LineString
+from shapely.geometry import LineString, Point, MultiPoint
 from random import choice
 from game_core.constants import *
 from game_core.player import Player
@@ -69,6 +69,12 @@ def apply_players_damages(collision_point, shell_power, shell_radius):
     if len(explosion_points) > 0:
         for point in explosion_points:
             apply_players_damages(point, tank_explosion_power, tank_explosion_radius)
+            ground.update_after_explosion(point, tank_explosion_radius)
+
+
+def correct_tanks_heights():
+    for player in players:
+        player.correct_tanks_heights(ground)
 
 
 def fire_simple_shell(tank_object):
@@ -91,8 +97,8 @@ def fire_simple_shell(tank_object):
                 halt_whole_game()
 
         prev_shell_position = list(shell_position)
-        vertical_speed = -(int(speed * cos(gun_angle)) - 10 * elapsed_time/2)
-        horizontal_speed = int(speed * sin(gun_angle))
+        vertical_speed = -((speed * cos(gun_angle)) - 10 * elapsed_time/2)
+        horizontal_speed = (speed * sin(gun_angle))
         shell_position[0] += int(horizontal_speed*elapsed_time)
         shell_position[1] += int(vertical_speed*elapsed_time)
         elapsed_time += 0.1
@@ -104,7 +110,9 @@ def fire_simple_shell(tank_object):
 
         if collision_point:
             animate_explosion(game_display, collision_point, strike_earth_sound, simple_shell_radius)
+            ground.update_after_explosion(collision_point, simple_shell_radius)
             apply_players_damages(collision_point, simple_shell_power, simple_shell_radius)
+            correct_tanks_heights()
             fire = False
         else:
             pygame.draw.circle(game_display, color, (shell_position[0], shell_position[1]), 5)
@@ -204,7 +212,6 @@ def game_loop():
             active_tank.show_tanks_power()
             active_tank.update_turret_angle(angle_change)
             active_tank.update_tank_power(power_change)
-
 
         pygame.display.update()
         clock.tick(fps)

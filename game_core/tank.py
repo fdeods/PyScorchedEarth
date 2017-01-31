@@ -219,6 +219,9 @@ class Tank:
         """
         return self.position[0], self.position[1]
 
+    def update_tank_position(self, new_coordinates):
+        self.position = list(new_coordinates)
+
     def show_tank_special(self):
         self.special_counter += 1
         if self.special_counter % 10 == 0:

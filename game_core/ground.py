@@ -1,6 +1,6 @@
 import pygame
 from random import randint
-from shapely.geometry import LineString
+from shapely.geometry import LineString, Point, MultiPoint
 from game_core.constants import *
 
 
@@ -53,3 +53,21 @@ class Ground:
     def correct_heights(self, interval, new_height):
         for i in range(interval[0], interval[1]):
             self.points[i][1] = new_height
+
+    def update_after_explosion(self, explosion_point, explosion_radius):
+        explosion_circle = Point(explosion_point).buffer(explosion_radius).boundary
+        max_left = max(0, explosion_point[0]-explosion_radius)
+        max_right = min(display_width, explosion_point[0]+explosion_radius)
+        for i in range(max_left, max_right):
+            ground_line = LineString([[i, display_height], self.points[i]])
+            intersection = explosion_circle.intersection(ground_line)
+            if isinstance(intersection, MultiPoint):
+                first_point = intersection.geoms[0]
+                second_point = intersection.geoms[1]
+                fst_coordinate = i, min(int(first_point.coords[0][1]), int(second_point.coords[0][1]))
+                snd_coordinate = i, max(int(first_point.coords[0][1]), int(second_point.coords[0][1]))
+
+                left_length = fst_coordinate[1] - self.points[i][1]
+                self.points[i][1] = snd_coordinate[1] - left_length
+            elif isinstance(intersection, Point):
+                self.points[i][1] = int(intersection.coords[0][1])

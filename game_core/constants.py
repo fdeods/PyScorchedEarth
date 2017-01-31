@@ -49,7 +49,7 @@ ground_height_max = 600
 health_bar_init_positions = [(10, 10), (1490, 10), (10, 45), (1490, 45)]
 health_bar_length = 100
 players_number = 2
-tanks_number = 1
+tanks_number = 3
 
 
 # PyGame fonts
