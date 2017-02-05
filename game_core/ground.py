@@ -2,6 +2,7 @@ import pygame
 from random import randint
 from shapely.geometry import LineString, Point, MultiPoint
 from game_core.constants import *
+from game_core.utils import animate_ground_sloughing
 
 
 class Ground:
@@ -43,6 +44,12 @@ class Ground:
                 intersection_point = int(intersection.x), int(intersection.y)
                 break
 
+        if not intersection_point:
+            display_line = LineString([[0, display_height], [display_width, display_height]])
+            intersection_display = display_line.intersection(line)
+            if intersection_display:
+                intersection_point = int(intersection_display.x), int(intersection_display.y)
+
         return intersection_point
 
     def get_ground_height_at_point(self, x_coord):
@@ -55,19 +62,45 @@ class Ground:
             self.points[i][1] = new_height
 
     def update_after_explosion(self, explosion_point, explosion_radius):
+        left_ground = []
         explosion_circle = Point(explosion_point).buffer(explosion_radius).boundary
         max_left = max(0, explosion_point[0]-explosion_radius)
         max_right = min(display_width, explosion_point[0]+explosion_radius)
         for i in range(max_left, max_right):
             ground_line = LineString([[i, display_height], self.points[i]])
             intersection = explosion_circle.intersection(ground_line)
-            if isinstance(intersection, MultiPoint):
+            if explosion_point[1] + explosion_radius > display_height:
+                left_start = explosion_point[1] - explosion_radius
+                if self.points[i][1] < left_start:
+                    explode_length = display_height - left_start
+                    self.points[i][1] += explode_length
+                else:
+                    self.points[i][1] = display_height
+            elif isinstance(intersection, MultiPoint):
                 first_point = intersection.geoms[0]
                 second_point = intersection.geoms[1]
                 fst_coordinate = i, min(int(first_point.coords[0][1]), int(second_point.coords[0][1]))
                 snd_coordinate = i, max(int(first_point.coords[0][1]), int(second_point.coords[0][1]))
+                # print(fst_coordinate, snd_coordinate)
 
                 left_length = fst_coordinate[1] - self.points[i][1]
-                self.points[i][1] = snd_coordinate[1] - left_length
+                if left_length > 0:
+                    left_ground.append([[i, fst_coordinate[1]], [i, self.points[i][1]]])
+                self.points[i][1] = snd_coordinate[1]
+                # self.points[i][1] = snd_coordinate[1] - left_length
             elif isinstance(intersection, Point):
-                self.points[i][1] = int(intersection.coords[0][1])
+                if not explosion_circle.contains(intersection):
+                    self.points[i][1] = int(intersection.coords[0][1])
+
+        print(left_ground)
+        # self.draw_temp_after_explosion(explosion_point, explosion_radius)
+        # animate_ground_sloughing(self.game_display, left_ground, self)
+        return left_ground
+
+    def draw_temp_after_explosion(self, explosion_point, explosion_radius):
+        pygame.draw.circle(self.game_display, black, explosion_point, explosion_radius)
+
+    def update_after_sloughing(self, left_ground):
+        for line in left_ground:
+            length = line[0][1] - line[1][1]
+            self.points[line[0][0]][1] -= length

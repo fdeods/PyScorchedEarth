@@ -58,8 +58,8 @@ class Player:
         ground_heights = []
         for index in range(x_coord - int(tank_width / 2), x_coord + int(tank_width / 2)):
             ground_heights.append(ground.get_ground_height_at_point(index))
-        #return int(sum(ground_heights)/len(ground_heights))
-        return max(ground_heights)
+        return int(sum(ground_heights)/len(ground_heights))
+        #return max(ground_heights)
 
     def draw_tanks_and_bars(self):
         """

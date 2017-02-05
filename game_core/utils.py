@@ -99,3 +99,33 @@ def animate_explosion(game_display, start_point, sound, size=50):
 
         explode = False
 
+
+def animate_ground_sloughing(game_display, left_ground, ground):
+    clock = pygame.time.Clock()
+    normalized = 0
+    print(len(left_ground))
+    while normalized < len(left_ground):
+        normalized = 0
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                halt_whole_game()
+
+        for line in left_ground:
+            pygame.draw.line(game_display,
+                             black,
+                             line[0],
+                             line[1])
+            if left_ground.index(line) == 0:
+                print(line[0][1], ground.get_ground_height_at_point(line[0][0]))
+            if line[0][1] == ground.get_ground_height_at_point(line[0][0]):
+                normalized += 1
+            else:
+                line[0][1] += 1
+                line[1][1] += 1
+            pygame.draw.line(game_display,
+                             dark_green,
+                             line[0],
+                             line[1])
+
+        pygame.display.update()
+        clock.tick(100)

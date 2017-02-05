@@ -4,7 +4,7 @@ from shapely.geometry import LineString, Point, MultiPoint
 from random import choice
 from game_core.constants import *
 from game_core.player import Player
-from game_core.utils import animate_explosion, halt_whole_game, message_to_screen
+from game_core.utils import animate_explosion, halt_whole_game, message_to_screen, animate_ground_sloughing
 from game_core.ground import Ground
 
 # init game_core and PyGame variables
@@ -61,6 +61,15 @@ def check_collision(prev_shell_position, current_shell_position):
     return ground.check_collision(line1)
 
 
+def correct_ground(point, explosion_radius):
+    left_ground = ground.update_after_explosion(point, explosion_radius)
+    if len(left_ground) > 0:
+        print("WILL BE SLOUGH")
+        draw_all()
+        animate_ground_sloughing(game_display, left_ground, ground)
+        ground.update_after_sloughing(left_ground)
+
+
 def apply_players_damages(collision_point, shell_power, shell_radius):
     global players
     explosion_points = []
@@ -69,7 +78,7 @@ def apply_players_damages(collision_point, shell_power, shell_radius):
     if len(explosion_points) > 0:
         for point in explosion_points:
             apply_players_damages(point, tank_explosion_power, tank_explosion_radius)
-            ground.update_after_explosion(point, tank_explosion_radius)
+            correct_ground(point, tank_explosion_radius)
 
 
 def correct_tanks_heights():
@@ -103,14 +112,14 @@ def fire_simple_shell(tank_object):
         shell_position[1] += int(vertical_speed*elapsed_time)
         elapsed_time += 0.1
 
-        if shell_position[1] > display_height:
+        if shell_position[1] > 2 * display_height:
             break
 
         collision_point = check_collision(prev_shell_position, shell_position)
 
         if collision_point:
             animate_explosion(game_display, collision_point, strike_earth_sound, simple_shell_radius)
-            ground.update_after_explosion(collision_point, simple_shell_radius)
+            correct_ground(collision_point, simple_shell_radius)
             apply_players_damages(collision_point, simple_shell_power, simple_shell_radius)
             correct_tanks_heights()
             fire = False
@@ -140,6 +149,13 @@ def update_players():
                     break
 
     players = left_players
+
+
+def draw_all():
+    game_display.fill(black)
+    ground.draw()
+    for player in players:
+        player.draw_tanks_and_bars()
 
 
 def game_loop():
@@ -199,10 +215,7 @@ def game_loop():
                 elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     power_change = 0
 
-        game_display.fill(black)
-        ground.draw()
-        for player in players:
-            player.draw_tanks_and_bars()
+        draw_all()
 
         if len(players) <= 1:
             game_over = True

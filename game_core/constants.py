@@ -42,8 +42,8 @@ simple_shell_power = 30
 simple_shell_radius = 50
 
 # temporary simple ground
-ground_height_min = 200
-ground_height_max = 600
+ground_height_min = 100 # 200
+ground_height_max = 800 # 600
 
 # player settings
 health_bar_init_positions = [(10, 10), (1490, 10), (10, 45), (1490, 45)]
