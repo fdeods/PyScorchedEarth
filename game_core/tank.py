@@ -2,7 +2,7 @@ import pygame
 from math import sqrt, sin, cos
 from shapely.geometry import LineString
 from game_core.constants import *
-from game_core.utils import sys_text_object, animate_explosion
+from game_core.utils import sys_text_object, animate_explosion, halt_whole_game
 from random import randint
 
 
@@ -231,3 +231,20 @@ class Tank:
             self.draw_health_bar(True)
             self.player_color = real_color
             self.special_counter = 0
+
+    def animate_tank_fall(self, desirable_height):
+        clock = pygame.time.Clock()
+        while self.position[1] != desirable_height:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    halt_whole_game()
+
+            temp_color = self.player_color
+            self.player_color = black
+            self.draw_tank()
+            self.position[1] += 1
+            self.player_color = temp_color
+            self.draw_tank()
+
+            pygame.display.update()
+            clock.tick(100)

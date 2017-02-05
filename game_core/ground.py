@@ -2,7 +2,6 @@ import pygame
 from random import randint
 from shapely.geometry import LineString, Point, MultiPoint
 from game_core.constants import *
-from game_core.utils import animate_ground_sloughing
 
 
 class Ground:
@@ -81,20 +80,15 @@ class Ground:
                 second_point = intersection.geoms[1]
                 fst_coordinate = i, min(int(first_point.coords[0][1]), int(second_point.coords[0][1]))
                 snd_coordinate = i, max(int(first_point.coords[0][1]), int(second_point.coords[0][1]))
-                # print(fst_coordinate, snd_coordinate)
 
                 left_length = fst_coordinate[1] - self.points[i][1]
                 if left_length > 0:
                     left_ground.append([[i, fst_coordinate[1]], [i, self.points[i][1]]])
                 self.points[i][1] = snd_coordinate[1]
-                # self.points[i][1] = snd_coordinate[1] - left_length
             elif isinstance(intersection, Point):
                 if not explosion_circle.contains(intersection):
                     self.points[i][1] = int(intersection.coords[0][1])
 
-        print(left_ground)
-        # self.draw_temp_after_explosion(explosion_point, explosion_radius)
-        # animate_ground_sloughing(self.game_display, left_ground, self)
         return left_ground
 
     def draw_temp_after_explosion(self, explosion_point, explosion_radius):
@@ -104,3 +98,4 @@ class Ground:
         for line in left_ground:
             length = line[0][1] - line[1][1]
             self.points[line[0][0]][1] -= length
+

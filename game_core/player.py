@@ -146,6 +146,7 @@ class Player:
             tank_pos_x = tank.get_tank_position()[0]
             opt_height = self.define_optimal_height(tank.get_tank_position()[0], ground)
             new_height = opt_height - full_tank_height
+            tank.animate_tank_fall(new_height)
             tank.update_tank_position((tank_pos_x, new_height))
             ground.correct_heights((tank_pos_x-int(tank_width/2), tank_pos_x+int(tank_width/2)),
                                    opt_height)

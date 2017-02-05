@@ -101,9 +101,15 @@ def animate_explosion(game_display, start_point, sound, size=50):
 
 
 def animate_ground_sloughing(game_display, left_ground, ground):
+    """
+    Animates ground sloughing
+    :param game_display: display to operate with
+    :param left_ground: list of all ground pieces to slough
+    :param ground: Ground object
+    :return: none
+    """
     clock = pygame.time.Clock()
     normalized = 0
-    print(len(left_ground))
     while normalized < len(left_ground):
         normalized = 0
         for event in pygame.event.get():
@@ -115,8 +121,6 @@ def animate_ground_sloughing(game_display, left_ground, ground):
                              black,
                              line[0],
                              line[1])
-            if left_ground.index(line) == 0:
-                print(line[0][1], ground.get_ground_height_at_point(line[0][0]))
             if line[0][1] == ground.get_ground_height_at_point(line[0][0]):
                 normalized += 1
             else:

@@ -131,6 +131,10 @@ def fire_simple_shell(tank_object):
 
 
 def update_players():
+    """
+    Updates each player information
+    :return: none
+    """
     global players
     global active_player
     left_players = []
@@ -152,6 +156,10 @@ def update_players():
 
 
 def draw_all():
+    """
+    Draws all elements on display
+    :return: none
+    """
     game_display.fill(black)
     ground.draw()
     for player in players:
