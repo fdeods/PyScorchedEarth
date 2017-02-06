@@ -134,8 +134,8 @@ class GameManager:
             if len(left_players) > 0:
                 init_index = self.players.index(self.active_player)
                 while True:
-                    active_player = self.players[(init_index + 1) % len(self.players)]
-                    if active_player in left_players:
+                    self.active_player = self.players[(init_index + 1) % len(self.players)]
+                    if self.active_player in left_players:
                         break
 
         self.players = left_players

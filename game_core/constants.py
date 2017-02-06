@@ -31,14 +31,14 @@ move_step = 3
 angle_step = pi/64
 initial_turret_angle = -pi/2
 initial_tank_health = 100
-tank_explosion_power = 15
+tank_explosion_power = 40
 tank_explosion_radius = 100
 
 # simple shell constants
 min_shell_speed = 12
 max_shell_speed = 22
 shell_speed_step = (max_shell_speed-min_shell_speed)/100
-simple_shell_power = 150
+simple_shell_power = 100
 simple_shell_radius = 50
 
 # temporary simple ground
@@ -50,7 +50,7 @@ health_bar_init_positions = [(10, 10), (1490, 10), (10, 45), (1490, 45)]
 health_bar_length = 100
 players_number = 3
 max_players_number = 4
-tanks_number = 3
+tanks_number = 2
 max_tanks_number = 5
 
 
