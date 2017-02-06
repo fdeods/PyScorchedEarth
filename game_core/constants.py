@@ -42,7 +42,7 @@ simple_shell_power = 150
 simple_shell_radius = 50
 
 # temporary simple ground
-ground_height_min = 100
+ground_height_min = 400
 ground_height_max = 800
 
 # player settings

@@ -68,8 +68,8 @@ class GameManager:
             explosion_points.extend(player.apply_damage(collision_point, shell_power, shell_radius))
         if len(explosion_points) > 0:
             for point in explosion_points:
-                self.apply_players_damages(point, tank_explosion_power, tank_explosion_radius)
                 self.correct_ground(point, tank_explosion_radius)
+                self.apply_players_damages(point, tank_explosion_power, tank_explosion_radius)
 
     def correct_tanks_heights(self):
         for player in self.players:
