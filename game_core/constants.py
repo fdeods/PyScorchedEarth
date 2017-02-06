@@ -38,11 +38,11 @@ tank_explosion_radius = 100
 min_shell_speed = 12
 max_shell_speed = 22
 shell_speed_step = (max_shell_speed-min_shell_speed)/100
-simple_shell_power = 100
+simple_shell_power = 80
 simple_shell_radius = 50
 
 # temporary simple ground
-ground_height_min = 400
+ground_height_min = 500
 ground_height_max = 800
 
 # player settings
