@@ -35,6 +35,41 @@ def empty_func():
     pass
 
 
+displayMenu = GroupedOptions()
+mainMenu = GroupedOptions()
+settingsMenu = GroupedOptions()
+
+
+def get_option_text(const, variable=""):
+    global str
+    return const + str(variable)
+
+
+def go_to_settings():
+    global displayMenu
+    displayMenu = settingsMenu
+
+
+def go_to_main_menu():
+    global displayMenu
+    displayMenu = mainMenu
+
+
+def change_tanks():
+    if constants.tanks_number > constants.max_tanks_number:
+        constants.tanks_number = 1
+    else:
+        constants.tanks_number += 1
+    print(constants.tanks_number)
+
+
+def change_players():
+    if constants.players_number > constants. max_players_number:
+        constants.players_number = 2
+    else:
+        constants.players_number += 1
+
+
 def draw_black_screen_effect():
     effect_filter = pygame.surface.Surface((constants.display_width, constants.display_height))
     effect_filter.fill(pygame.color.Color('White'))
@@ -54,23 +89,21 @@ if __name__ == '__main__':
 
     # initialize fonts
     pygame.init()
-    menu_font = pygame.font.Font('../assets/fonts/font.ttf', 30)
-    title_font = pygame.font.Font('../assets/fonts/font.ttf', 80)
+    menu_font = pygame.font.Font('../assets/fonts/DeathFromAbove.ttf', 40)
+    title_font = pygame.font.Font('../assets/fonts/DeathFromAbove.ttf', 100)
 
     # initialize menu options
-    first, space = 250, 50
-    mainMenu = GroupedOptions()
-    settingsMenu = GroupedOptions()
+    first, space = 250, 60
 
-    mainMenu.add(Option("SCORCHED EARTH", 20, empty_func, title_font))
-    mainMenu.add(Option("NEW GAME", first, empty_func, menu_font))
-    mainMenu.add(Option("SETTINGS", (first + space), empty_func, menu_font))
-    mainMenu.add(Option("EXIT", (first + (space * 2)), sys.exit, menu_font))
+    mainMenu.add(Option(lambda: get_option_text("SCORCHED  EARTH"), 20, empty_func, title_font))
+    mainMenu.add(Option(lambda: get_option_text("NEW  GAME"), first, empty_func, menu_font))
+    mainMenu.add(Option(lambda: get_option_text("SETTINGS"), (first + space), go_to_settings, menu_font))
+    mainMenu.add(Option(lambda: get_option_text("EXIT"), (first + (space * 2)), sys.exit, menu_font))
 
-    settingsMenu.add(Option("SCORCHED EARTH", 20, empty_func, title_font))
-    settingsMenu.add(Option("PLAYERS: X", first, empty_func, menu_font))
-    settingsMenu.add(Option("TANKS: X", (first + space), empty_func, menu_font))
-    settingsMenu.add(Option("BACK", (first + (space * 2)), empty_func, menu_font))
+    settingsMenu.add(Option(lambda: get_option_text("SCORCHED  EARTH"), 20, empty_func, title_font))
+    settingsMenu.add(Option(lambda: get_option_text("PLAYERS  :  ", constants.players_number), first, change_players, menu_font))
+    settingsMenu.add(Option(lambda: get_option_text("TANKS  :  ", constants.tanks_number), (first + space), change_tanks, menu_font))
+    settingsMenu.add(Option(lambda: get_option_text("BACK"), (first + (space * 2)), go_to_main_menu, menu_font))
 
     displayMenu = mainMenu
 

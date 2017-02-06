@@ -8,7 +8,7 @@ class Option:
     def __init__(self, text, pos, func, font):
         """
         Initialize option
-        :param text: text to display
+        :param text: text function to display
         :param pos: initial position of the text
         :param func: function which will be called on mouse onclick event
         :param font: set text font
@@ -32,7 +32,8 @@ class Option:
         """
         Set text render options
         """
-        self.rend = self.font.render(self.text, True, self.get_color())
+        text = self.text()
+        self.rend = self.font.render(text, True, self.get_color())
 
     def get_color(self):
         """
