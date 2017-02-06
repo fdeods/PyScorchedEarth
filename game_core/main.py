@@ -2,10 +2,10 @@ import pygame
 from math import cos, sin
 from shapely.geometry import LineString, Point, MultiPoint
 from random import choice
-from game_core.constants import *
-from game_core.player import Player
-from game_core.utils import animate_explosion, halt_whole_game, message_to_screen, animate_ground_sloughing
-from game_core.ground import Ground
+from constants import *
+from player import Player
+from utils import animate_explosion, halt_whole_game, message_to_screen, animate_ground_sloughing
+from ground import Ground
 
 # init game_core and PyGame variables
 pygame.init()
@@ -64,7 +64,6 @@ def check_collision(prev_shell_position, current_shell_position):
 def correct_ground(point, explosion_radius):
     left_ground = ground.update_after_explosion(point, explosion_radius)
     if len(left_ground) > 0:
-        print("WILL BE SLOUGH")
         draw_all()
         animate_ground_sloughing(game_display, left_ground, ground)
         ground.update_after_sloughing(left_ground)

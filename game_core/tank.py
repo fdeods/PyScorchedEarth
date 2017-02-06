@@ -1,8 +1,8 @@
 import pygame
 from math import sqrt, sin, cos
 from shapely.geometry import LineString
-from game_core.constants import *
-from game_core.utils import sys_text_object, animate_explosion, halt_whole_game
+from constants import *
+from utils import sys_text_object, animate_explosion, halt_whole_game
 from random import randint
 
 

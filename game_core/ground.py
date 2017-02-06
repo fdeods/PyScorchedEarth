@@ -1,7 +1,7 @@
 import pygame
 from random import randint
 from shapely.geometry import LineString, Point, MultiPoint
-from game_core.constants import *
+from constants import *
 
 
 class Ground:

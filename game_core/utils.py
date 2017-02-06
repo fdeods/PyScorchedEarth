@@ -1,6 +1,6 @@
 import pygame
 import random
-from game_core.constants import *
+from constants import *
 
 
 def sys_text_object(text, color, size=FontSize.SMALL):
