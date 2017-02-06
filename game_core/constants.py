@@ -38,18 +38,18 @@ tank_explosion_radius = 100
 min_shell_speed = 12
 max_shell_speed = 22
 shell_speed_step = (max_shell_speed-min_shell_speed)/100
-simple_shell_power = 30
+simple_shell_power = 150
 simple_shell_radius = 50
 
 # temporary simple ground
-ground_height_min = 100 # 200
-ground_height_max = 800 # 600
+ground_height_min = 100
+ground_height_max = 800
 
 # player settings
 health_bar_init_positions = [(10, 10), (1490, 10), (10, 45), (1490, 45)]
 health_bar_length = 100
 players_number = 2
-tanks_number = 3
+tanks_number = 1
 
 
 # PyGame fonts
