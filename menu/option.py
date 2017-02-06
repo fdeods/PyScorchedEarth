@@ -2,7 +2,9 @@ from game_core import constants
 
 
 class Option:
-
+    """
+    Class which represents Options object
+    """
     def __init__(self, text, pos, func, font):
         """
         Initialize option

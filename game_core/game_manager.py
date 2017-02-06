@@ -9,8 +9,15 @@ from game_core.utils import animate_ground_sloughing, halt_whole_game, animate_e
 
 
 class GameManager:
-
+    """
+    Class which represents game manager object in game
+    """
     def __init__(self, player_number, tank_number):
+        """
+        Init function
+        :param player_number: number of players
+        :param tank_number: number of tanks for each player
+        """
         self.players = []
         self.active_player = None
         self.game_display = pygame.display.set_mode((display_width, display_height))
@@ -56,6 +63,12 @@ class GameManager:
         return self.ground.check_collision(line1)
 
     def correct_ground(self, point, explosion_radius):
+        """
+        Corrects ground after explosion
+        :param point: point of explosion
+        :param explosion_radius: radius of explosion
+        :return: none
+        """
         left_ground = self.ground.update_after_explosion(point, explosion_radius)
         if len(left_ground) > 0:
             self.draw_all()
@@ -63,6 +76,13 @@ class GameManager:
             self.ground.update_after_sloughing(left_ground)
 
     def apply_players_damages(self, collision_point, shell_power, shell_radius):
+        """
+        Applies damages for players tanks
+        :param collision_point: point of collision
+        :param shell_power: power of shell
+        :param shell_radius: radius of shell
+        :return: none
+        """
         explosion_points = []
         for player in self.players:
             explosion_points.extend(player.apply_damage(collision_point, shell_power, shell_radius))
@@ -72,6 +92,10 @@ class GameManager:
                 self.apply_players_damages(point, tank_explosion_power, tank_explosion_radius)
 
     def correct_tanks_heights(self):
+        """
+        Corrects heights of all players' tanks
+        :return: none
+        """
         for player in self.players:
             player.correct_tanks_heights(self.ground)
 
@@ -151,6 +175,10 @@ class GameManager:
             player.draw_tanks_and_bars()
 
     def run(self):
+        """
+        Run game
+        :return: none
+        """
         self.reinitialize_players()
         active_tank = self.players[0].next_active_tank()
         game_exit = False
