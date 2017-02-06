@@ -71,8 +71,8 @@ class Ground:
             if explosion_point[1] + explosion_radius > display_height:
                 left_start = explosion_point[1] - explosion_radius
                 if self.points[i][1] < left_start:
-                    explode_length = display_height - left_start
-                    self.points[i][1] += explode_length
+                    left_ground.append([[i, left_start], [i, self.points[i][1]]])
+                    self.points[i][1] = display_height
                 else:
                     self.points[i][1] = display_height
             elif isinstance(intersection, MultiPoint):
