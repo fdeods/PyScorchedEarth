@@ -3,8 +3,6 @@ from game_core import constants
 
 class Option:
 
-    hovered = False
-
     def __init__(self, text, pos, func, font):
         """
         Initialize option
@@ -18,8 +16,8 @@ class Option:
         self.func = func
         self.rect = 0
         self.rend = 0
-        if font != 0:
-            self.font = font
+        self.hovered = False
+        self.font = font
         self.set_rect()
 
     def select(self):

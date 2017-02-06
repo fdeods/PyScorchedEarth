@@ -49,7 +49,6 @@ bg = pygame.transform.scale(bg, size)
 
 
 def get_option_text(const, variable=""):
-    global str
     return const + str(variable)
 
 
