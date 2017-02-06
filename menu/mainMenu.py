@@ -1,70 +1,9 @@
 import sys
 import pygame
 from game_core import constants
+from menu.option import Option, GroupedOptions
 from libs.pyIgnition import particleEffect, particles
 #  from game_core import main
-
-
-class Option:
-
-    hovered = False
-
-    def __init__(self, text, pos, func, font=0):
-        """
-        Initialize option
-        :param text: text to display
-        :param pos: initial position of the text
-        :param func: function which will be called on mouse onclick event
-        :param font: set text font
-        """
-        self.text = text
-        self.pos = pos
-        self.func = func
-        if font != 0:
-            self.font = font
-        else:
-            self.font = menu_font
-        self.set_rect()
-        self.draw()
-
-    def select(self):
-        """
-        Call function when option is hovered and clicked
-        """
-        self.func()
-
-    def draw(self):
-        """
-        Draw text on the screen
-        """
-        self.set_rend()
-        screen.blit(self.rend, self.rect)
-
-    def set_rend(self):
-        """
-        Set text render options
-        """
-        self.rend = self.font.render(self.text, True, self.get_color())
-
-    def get_color(self):
-        """
-        Get hovered and default color of text
-        """
-        if self.hovered:
-            return (251, 223, 124)
-        else:
-            return (0, 0, 0)
-
-
-    def set_rect(self):
-        """
-        Get hovered and default color of text
-        """
-        self.set_rend()
-        self.rect = self.rend.get_rect()
-        self.rect.center = (int((constants.display_width / 2)), int(constants.display_height / 2))
-        self.rect.top = self.pos
-
 
 effect_length = 1200
 effectTimeTable = (
@@ -120,12 +59,20 @@ if __name__ == '__main__':
 
     # initialize menu options
     first, space = 250, 50
-    options = [
-        Option("SCORCHED EARTH", 20, empty_func, title_font),
-        Option("NEW GAME", first, empty_func),
-        Option("OPTIONS", (first + space), empty_func),
-        Option("EXIT", (first + (space * 2)), sys.exit)
-    ]
+    mainMenu = GroupedOptions()
+    settingsMenu = GroupedOptions()
+
+    mainMenu.add(Option("SCORCHED EARTH", 20, empty_func, title_font))
+    mainMenu.add(Option("NEW GAME", first, empty_func, menu_font))
+    mainMenu.add(Option("SETTINGS", (first + space), empty_func, menu_font))
+    mainMenu.add(Option("EXIT", (first + (space * 2)), sys.exit, menu_font))
+
+    settingsMenu.add(Option("SCORCHED EARTH", 20, empty_func, title_font))
+    settingsMenu.add(Option("PLAYERS: X", first, empty_func, menu_font))
+    settingsMenu.add(Option("TANKS: X", (first + space), empty_func, menu_font))
+    settingsMenu.add(Option("BACK", (first + (space * 2)), empty_func, menu_font))
+
+    displayMenu = mainMenu
 
     # initialize effects
     clock = pygame.time.Clock()
@@ -182,15 +129,17 @@ if __name__ == '__main__':
         effect.Redraw()
 
         # options loop
-        for option in options:
+        for option in displayMenu.options:
             if option.rect.collidepoint(pygame.mouse.get_pos()):
                 option.hovered = True
+                option.set_rend()
                 for event in pygame.event.get():
                     if event.type == pygame.MOUSEBUTTONUP:
                         option.select()
             else:
                 option.hovered = False
-            option.draw()
+                option.set_rend()
+            screen.blit(option.rend, option.rect)
 
         # draw effect
         if not is_effect(pygame.mixer.music.get_pos()):
