@@ -3,7 +3,7 @@ import pygame
 from game_core import constants
 from menu.option import Option, GroupedOptions
 from libs.pyIgnition import particleEffect, particles
-from game_core import game_manager
+from game_core.game_manager import GameManager
 
 effect_length = 1200
 effectTimeTable = (
@@ -34,10 +34,18 @@ def empty_func():
     """
     pass
 
-
+pygame.init()
 displayMenu = GroupedOptions()
 mainMenu = GroupedOptions()
 settingsMenu = GroupedOptions()
+size = constants.display_width, constants.display_height
+screen = pygame.display.set_mode(size)
+
+# initialize pictures
+light = pygame.image.load('assets/images/circle.png')
+light = pygame.transform.scale(light, (300, 300))
+bg = pygame.image.load("assets/images/background.jpg")
+bg = pygame.transform.scale(bg, size)
 
 
 def get_option_text(const, variable=""):
@@ -56,17 +64,21 @@ def go_to_main_menu():
 
 
 def change_tanks():
-    if constants.tanks_number > constants.max_tanks_number:
+    if constants.tanks_number >= constants.max_tanks_number:
         constants.tanks_number = 1
     else:
         constants.tanks_number += 1
 
 
 def change_players():
-    if constants.players_number > constants. max_players_number:
+    if constants.players_number >= constants. max_players_number:
         constants.players_number = 2
     else:
         constants.players_number += 1
+
+
+def start_game():
+    GameManager(constants.players_number, constants.tanks_number).run()
 
 
 def draw_black_screen_effect():
@@ -76,26 +88,19 @@ def draw_black_screen_effect():
     screen.blit(effect_filter, (0, 0), special_flags=pygame.BLEND_RGBA_SUB)
     pygame.display.flip()
 
-if __name__ == '__main__':
-    size = constants.display_width, constants.display_height
-    screen = pygame.display.set_mode(size)
 
-    # initialize pictures
-    light = pygame.image.load('../assets/images/circle.png')
-    light = pygame.transform.scale(light, (300, 300))
-    bg = pygame.image.load("../assets/images/background.jpg")
-    bg = pygame.transform.scale(bg, size)
+def init_menu():
+    global displayMenu
 
     # initialize fonts
-    pygame.init()
-    menu_font = pygame.font.Font('../assets/fonts/DeathFromAbove.ttf', 40)
-    title_font = pygame.font.Font('../assets/fonts/DeathFromAbove.ttf', 100)
+    menu_font = pygame.font.Font('assets/fonts/DeathFromAbove.ttf', 40)
+    title_font = pygame.font.Font('assets/fonts/DeathFromAbove.ttf', 100)
 
     # initialize menu options
     first, space = 250, 60
 
     mainMenu.add(Option(lambda: get_option_text("SCORCHED  EARTH"), 20, empty_func, title_font))
-    mainMenu.add(Option(lambda: get_option_text("NEW  GAME"), first, empty_func, menu_font))
+    mainMenu.add(Option(lambda: get_option_text("NEW  GAME"), first, start_game, menu_font))
     mainMenu.add(Option(lambda: get_option_text("SETTINGS"), (first + space), go_to_settings, menu_font))
     mainMenu.add(Option(lambda: get_option_text("EXIT"), (first + (space * 2)), sys.exit, menu_font))
 
@@ -107,9 +112,8 @@ if __name__ == '__main__':
     displayMenu = mainMenu
 
     # initialize effects
-    clock = pygame.time.Clock()
     effect = particleEffect.ParticleEffect(screen, (0, 0), (constants.display_width, constants.display_height))
-    gravity = effect.CreatePointGravity(
+    effect.CreatePointGravity(
         strength=-5,
         pos=(constants.display_width / 2, constants.display_height / 2 + 100)
     )
@@ -147,7 +151,7 @@ if __name__ == '__main__':
     testsource.CreateParticleKeyframe(125, colour=(0, 0, 0), length=10.0)
 
     # initialize music
-    pygame.mixer.music.load('../assets/music/backgroundMenuMusic.mp3')
+    pygame.mixer.music.load('assets/music/backgroundMenuMusic.mp3')
     pygame.mixer.music.play(-1)
 
     #  mainMenu main loop
@@ -178,3 +182,5 @@ if __name__ == '__main__':
             draw_black_screen_effect()
 
         pygame.display.update()
+
+init_menu()
