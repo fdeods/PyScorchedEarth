@@ -3,7 +3,7 @@ import pygame
 from game_core import constants
 from menu.option import Option, GroupedOptions
 from libs.pyIgnition import particleEffect, particles
-#  from game_core import main
+from game_core import game_manager
 
 effect_length = 1200
 effectTimeTable = (
@@ -60,7 +60,6 @@ def change_tanks():
         constants.tanks_number = 1
     else:
         constants.tanks_number += 1
-    print(constants.tanks_number)
 
 
 def change_players():
