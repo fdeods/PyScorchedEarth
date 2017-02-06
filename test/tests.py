@@ -5,6 +5,8 @@ from menu.option import Option
 from game_core.tank import Tank
 from game_core.constants import *
 
+os.chdir('..')
+
 
 def empty_function():
     pass
@@ -24,26 +26,26 @@ class OptionTestCase(unittest.TestCase):
 
     def test_option_text(self):
         pygame.init()
-        title_font = pygame.font.Font('../assets/fonts/DeathFromAbove.ttf', 100)
+        title_font = pygame.font.Font('assets/fonts/DeathFromAbove.ttf', 100)
         test = Option(lambda: return_text("SCORCHED  EARTH"), 20, empty_function, title_font)
         self.assertEqual(test.text(), "SCORCHED  EARTH")
 
     def test_option_text_position(self):
         pygame.init()
-        title_font = pygame.font.Font('../assets/fonts/DeathFromAbove.ttf', 100)
+        title_font = pygame.font.Font('assets/fonts/DeathFromAbove.ttf', 100)
         test = Option(lambda: return_text("SCORCHED  EARTH"), 20, empty_function, title_font)
         self.assertEqual(test.pos, 20)
 
     def test_option_hovered(self):
         pygame.init()
-        title_font = pygame.font.Font('../assets/fonts/DeathFromAbove.ttf', 100)
+        title_font = pygame.font.Font('assets/fonts/DeathFromAbove.ttf', 100)
         test = Option(lambda: return_text("SCORCHED  EARTH"), 20, empty_function, title_font)
         test.hovered = True
         self.assertEqual(test.hovered, True)
 
     def test_option_hovered_and_color(self):
         pygame.init()
-        title_font = pygame.font.Font('../assets/fonts/DeathFromAbove.ttf', 100)
+        title_font = pygame.font.Font('assets/fonts/DeathFromAbove.ttf', 100)
         test = Option(lambda: return_text("SCORCHED  EARTH"), 20, empty_function, title_font)
         test.hovered = True
         self.assertEqual(test.get_color(),  (251, 223, 124))
@@ -53,7 +55,7 @@ class OptionTestCase(unittest.TestCase):
     def test_option_select(self):
         global isCalled
         pygame.init()
-        title_font = pygame.font.Font('../assets/fonts/DeathFromAbove.ttf', 100)
+        title_font = pygame.font.Font('assets/fonts/DeathFromAbove.ttf', 100)
         test = Option(lambda: return_text("SCORCHED  EARTH"), 20, called, title_font)
         isCalled = False
         test.select()
@@ -61,8 +63,6 @@ class OptionTestCase(unittest.TestCase):
 
 
 class TankTestCase(unittest.TestCase):
-
-    os.chdir('..')
 
     def test_tank_calculate_distance_from_tank_center(self):
         pygame.init()
@@ -112,7 +112,7 @@ class TankTestCase(unittest.TestCase):
         tank = Tank((display_height, display_width), (100, 100), (200, 200), black)
         self.assertEquals(tank.position, [100, 100])
         tank.update_tank_position((200, 200))
-        self.assertEquals(tank.position(), (200, 200))
+        self.assertEquals(tank.position, [200, 200])
 
 
 if __name__ == '__main__':
