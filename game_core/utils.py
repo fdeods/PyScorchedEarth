@@ -1,6 +1,6 @@
 import pygame
 import random
-from constants import *
+from game_core.constants import *
 
 
 def sys_text_object(text, color, size=FontSize.SMALL):
@@ -29,16 +29,13 @@ def custom_text_object(text, color, size=FontSize.SMALL):
     :param size: size of the text (small, medium, large)
     :return: text object and borders of text as rectangle
     """
-    print(size)
-    font_string = '../assets/fonts/font.ttf'
+    font_string = 'assets/fonts/font.ttf'
     if size == FontSize.SMALL:
         text_surface = pygame.font.Font(font_string, 25).render(text, True, color)
     elif size == FontSize.MEDIUM:
         text_surface = pygame.font.Font(font_string, 50).render(text, True, color)
     elif size == FontSize.LARGE:
-        print("GO")
         text_surface = pygame.font.Font(font_string, 85).render(text, True, color)
-    print(text_surface)
     return text_surface, text_surface.get_rect()
 
 
@@ -52,12 +49,6 @@ def message_to_screen(game_display, text, color, y_displace=0, size=FontSize.SMA
     :param size: size of the text (small, medium, large)
     :return: none
     """
-    '''print(game_display)
-    print(text)
-    print(color)
-    print(y_displace)
-    print(size)
-    print(sys_font)'''
     if sys_font:
         text_surf, text_rect = sys_text_object(text, color, size)
     else:

@@ -1,6 +1,6 @@
 from random import randrange
-from constants import *
-from tank import Tank
+from game_core.constants import *
+from game_core.tank import Tank
 
 
 class Player:

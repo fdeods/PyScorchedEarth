@@ -2,10 +2,10 @@ import pygame
 from shapely.geometry import LineString
 from random import choice
 from math import sin, cos
-from constants import *
-from ground import Ground
-from player import Player
-from utils import animate_ground_sloughing, halt_whole_game, animate_explosion, message_to_screen
+from game_core.constants import *
+from game_core.ground import Ground
+from game_core.player import Player
+from game_core.utils import animate_ground_sloughing, halt_whole_game, animate_explosion, message_to_screen
 
 
 class GameManager:
@@ -16,8 +16,8 @@ class GameManager:
         self.game_display = pygame.display.set_mode((display_width, display_height))
         pygame.display.set_caption('ScorchedEarth')
         self.clock = pygame.time.Clock()
-        self.strike_earth_sound = pygame.mixer.Sound("../assets/music/Explosion1.wav")
-        self.normal_strike_sound = pygame.mixer.Sound("../assets/music/Explosion2.wav")
+        self.strike_earth_sound = pygame.mixer.Sound("assets/music/Explosion1.wav")
+        self.normal_strike_sound = pygame.mixer.Sound("assets/music/Explosion2.wav")
         self.ground = None
         self.players_number = player_number
         self.tank_number = tank_number

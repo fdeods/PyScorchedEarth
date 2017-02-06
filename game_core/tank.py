@@ -1,8 +1,8 @@
 import pygame
 from math import sqrt, sin, cos
 from shapely.geometry import LineString
-from constants import *
-from utils import sys_text_object, animate_explosion, halt_whole_game
+from game_core.constants import *
+from game_core.utils import sys_text_object, animate_explosion, halt_whole_game
 from random import randint
 
 
@@ -28,8 +28,8 @@ class Tank:
         self.turret_end_y = 0
         self.tank_power = 50
         self.game_display = game_display
-        self.explosion_sound = pygame.mixer.Sound("../assets/music/Explosion3.wav")
-        self.fire_sound = pygame.mixer.Sound('../assets/music/Cannon1.wav')
+        self.explosion_sound = pygame.mixer.Sound("assets/music/Explosion3.wav")
+        self.fire_sound = pygame.mixer.Sound("assets/music/Cannon1.wav")
         self.special_counter = 0
 
     def calculate_distance_from_tank_center(self, explosion_point):
