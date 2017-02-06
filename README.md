@@ -1,6 +1,7 @@
 # PyScorchedEarth
 ScorchedEarth written in Python programming language using PyGame library.
 Game is created for 2-4 players, each side can have up to 5 tanks.
+Game continues, until 1 or no players are left.
 
 Controls:
 * Left arrow/Right arrow - change angle of tanks turret
@@ -11,7 +12,7 @@ Have fun!
 
 
 ## Requirements
-Project is developed in Python 3.4 and Python 3.5 environments.
+Project is developed in Python 3.5 environments.
 File requirements.txt contains all the requirements.
 See Installing dependencies below.
 

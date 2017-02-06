@@ -220,9 +220,18 @@ class Tank:
         return self.position[0], self.position[1]
 
     def update_tank_position(self, new_coordinates):
+        """
+        Updates tank current position
+        :param new_coordinates: new coordinates
+        :return: none
+        """
         self.position = list(new_coordinates)
 
     def show_tank_special(self):
+        """
+        Show tank as white, when chosen
+        :return: none
+        """
         self.special_counter += 1
         if self.special_counter % 10 == 0:
             real_color = self.player_color
@@ -233,6 +242,11 @@ class Tank:
             self.special_counter = 0
 
     def animate_tank_fall(self, desirable_height):
+        """
+        Animate tank falling
+        :param desirable_height: new height
+        :return: none
+        """
         clock = pygame.time.Clock()
         while self.position[1] != desirable_height:
             for event in pygame.event.get():

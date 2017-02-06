@@ -4,7 +4,9 @@ from game_core.tank import Tank
 
 
 class Player:
-
+    """
+    Class which represents player object in game
+    """
     def __init__(self, game_display, number_of_tanks, color, player_number):
         """
         Initialize player
@@ -55,11 +57,16 @@ class Player:
         self.in_game = True
 
     def define_optimal_height(self, x_coord, ground):
+        """
+        Defines optimal height for tank
+        :param x_coord: x coordinate
+        :param ground: ground object handle
+        :return: optimal height
+        """
         ground_heights = []
         for index in range(x_coord - int(tank_width / 2), x_coord + int(tank_width / 2)):
             ground_heights.append(ground.get_ground_height_at_point(index))
         return int(sum(ground_heights)/len(ground_heights))
-        #return max(ground_heights)
 
     def draw_tanks_and_bars(self):
         """
@@ -142,6 +149,11 @@ class Player:
         return self.in_game
 
     def correct_tanks_heights(self, ground):
+        """
+        Correct all tanks heights
+        :param ground: ground object
+        :return: none
+        """
         for tank in self.active_tanks:
             tank_pos_x = tank.get_tank_position()[0]
             opt_height = self.define_optimal_height(tank.get_tank_position()[0], ground)

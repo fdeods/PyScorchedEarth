@@ -18,6 +18,11 @@ effectTimeMax = effectTimeTable[len(effectTimeTable)-1][1]
 
 
 def is_effect(music_pos):
+    """
+    Checks if effect is applicable now
+    :param music_pos: position of music
+    :return: True/False
+    """
     if music_pos < effectTimeMin:
         return False
     if music_pos > effectTimeMax:
@@ -49,20 +54,38 @@ bg = pygame.transform.scale(bg, size)
 
 
 def get_option_text(const, variable=""):
+    """
+    Returns option text
+    :param const: const value
+    :param variable: variable value
+    :return: const + variable as string
+    """
     return const + str(variable)
 
 
 def go_to_settings():
+    """
+    Function for Settings button
+    :return: none
+    """
     global displayMenu
     displayMenu = settingsMenu
 
 
 def go_to_main_menu():
+    """
+    Function for Back button
+    :return: none
+    """
     global displayMenu
     displayMenu = mainMenu
 
 
 def change_tanks():
+    """
+    Changes number of tanks in settings
+    :return: none
+    """
     if constants.tanks_number >= constants.max_tanks_number:
         constants.tanks_number = 1
     else:
@@ -70,6 +93,10 @@ def change_tanks():
 
 
 def change_players():
+    """
+    Changes number of players in settings
+    :return: none
+    """
     if constants.players_number >= constants. max_players_number:
         constants.players_number = 2
     else:
@@ -77,10 +104,18 @@ def change_players():
 
 
 def start_game():
+    """
+    Function under New Game button
+    :return: none
+    """
     GameManager(constants.players_number, constants.tanks_number).run()
 
 
 def draw_black_screen_effect():
+    """
+    Draw black screen effect
+    :return: none
+    """
     effect_filter = pygame.surface.Surface((constants.display_width, constants.display_height))
     effect_filter.fill(pygame.color.Color('White'))
     effect_filter.blit(light, tuple(map(lambda x: x - 150, pygame.mouse.get_pos())))
@@ -89,6 +124,10 @@ def draw_black_screen_effect():
 
 
 def init_menu():
+    """
+    Initializes menu of the game
+    :return: none
+    """
     global displayMenu
 
     # initialize fonts
@@ -181,5 +220,3 @@ def init_menu():
             draw_black_screen_effect()
 
         pygame.display.update()
-
-init_menu()
